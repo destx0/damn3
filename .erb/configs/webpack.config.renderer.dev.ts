@@ -51,9 +51,9 @@ const configuration: webpack.Configuration = {
 		app: {
 			import: path.join(webpackPaths.srcRendererPath, 'index.tsx'),
 		},
-		child: {
-			import: path.join(webpackPaths.srcRendererPath, 'child.tsx'),
-		},
+		// child: {
+		// 	import: path.join(webpackPaths.srcRendererPath, 'child.tsx'),
+		// },
 	},
 	output: {
 		path: webpackPaths.distRendererPath,
@@ -168,20 +168,20 @@ const configuration: webpack.Configuration = {
 			nodeModules: webpackPaths.appNodeModulesPath,
 		}),
 
-		new HtmlWebpackPlugin({
-			chunks: ['child'],
-			filename: path.join('child.html'),
-			template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
-			minify: {
-				collapseWhitespace: true,
-				removeAttributeQuotes: true,
-				removeComments: true,
-			},
-			isBrowser: false,
-			env: process.env.NODE_ENV,
-			isDevelopment: process.env.NODE_ENV !== 'production',
-			nodeModules: webpackPaths.appNodeModulesPath,
-		}),
+		// new HtmlWebpackPlugin({
+		// 	chunks: ['child'],
+		// 	filename: path.join('child.html'),
+		// 	template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+		// 	minify: {
+		// 		collapseWhitespace: true,
+		// 		removeAttributeQuotes: true,
+		// 		removeComments: true,
+		// 	},
+		// 	isBrowser: false,
+		// 	env: process.env.NODE_ENV,
+		// 	isDevelopment: process.env.NODE_ENV !== 'production',
+		// 	nodeModules: webpackPaths.appNodeModulesPath,
+		// }),
 	],
 
 	node: {

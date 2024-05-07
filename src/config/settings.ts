@@ -38,9 +38,9 @@ export const DEFAULT_SETTINGS: SettingsType = {
 	showDockIcon: true,
 	showTrayIcon: true,
 	startMinimized: false,
-	quitOnWindowClose: false,
+	quitOnWindowClose: true,
 
-	theme: 'system',
+	theme: 'light',
 };
 
 // see src/main/keyboard-shortcuts.ts
