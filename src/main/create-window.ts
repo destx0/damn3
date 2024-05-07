@@ -21,41 +21,61 @@ const getAssetPath = (...paths: string[]): string => {
 };
 
 const createWindow = (opts?: BrowserWindowConstructorOptions) => {
+	// const options: BrowserWindowConstructorOptions = {
+	// 	title: app.name,
+	// 	tabbingIdentifier: app.name,
+	// 	frame: APP_FRAME,
+	// 	show: true,
+
+	// 	closable: true,
+	// 	// fullscreen: true,
+	// 	// fullscreenable: false,
+	// 	// simpleFullscreen: true, // Pre-lion fullscreen support (stays in same space)
+	// 	// hasShadow: false,
+	// 	// maximizable: false,
+	// 	// minimizable: false,
+	// 	// movable: true,
+	// 	// resizable: false,
+
+	// 	backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
+	// 	vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
+	// 	useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
+
+	// 	width: APP_WIDTH,
+	// 	minWidth: 550,
+	// 	height: APP_HEIGHT,
+	// 	minHeight: 420,
+
+	// 	// Conditionally enable features based on the platform
+	// 	// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
+	// 	// ...(is.windows ? { type: 'toolbar' } : {}),
+
+	// 	// Don't set icon on Windows so the exe's ico will be used as window and
+	// 	// taskbar's icon. See https://github.com/atom/atom/issues/4811 for more.
+	// 	...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
+	// 	...opts,
+	// };
+
 	const options: BrowserWindowConstructorOptions = {
-		title: app.name,
-		tabbingIdentifier: app.name,
-		frame: APP_FRAME,
-		show: false,
+    title: app.name,
+    tabbingIdentifier: app.name,
+    frame: APP_FRAME,
+    show: false,
 
-		// closable: false,
-		// fullscreen: true,
-		// fullscreenable: false,
-		// simpleFullscreen: true, // Pre-lion fullscreen support (stays in same space)
-		// hasShadow: false,
-		// maximizable: false,
-		// minimizable: false,
-		// movable: true,
-		// resizable: false,
+    closable: true,
 
-		backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
-		useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
+    backgroundColor: '#ffffff', // Use a non-transparent color
+    vibrancy: 'under-window',
+    useContentSize: true,
 
-		width: APP_WIDTH,
-		minWidth: 550,
-		height: APP_HEIGHT,
-		minHeight: 420,
+    width: APP_WIDTH,
+    minWidth: 550,
+    height: APP_HEIGHT,
+    minHeight: 420,
 
-		// Conditionally enable features based on the platform
-		// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
-		// ...(is.windows ? { type: 'toolbar' } : {}),
-
-		// Don't set icon on Windows so the exe's ico will be used as window and
-		// taskbar's icon. See https://github.com/atom/atom/issues/4811 for more.
-		...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
-		...opts,
-	};
-
+    ...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
+    ...opts,
+  };
 	options.webPreferences = {
 		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
 		// Prevent throttling when the window is in the background:
@@ -110,8 +130,8 @@ export const createMainWindow = async () => {
 		// alwaysOnTop: true,
 		show: false,
 		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
-		titleBarStyle: 'hidden', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
-		// titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
+		titleBarStyle: 'hiddenInset', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
+		titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
 		trafficLightPosition: { x: 10, y: 9 },
 
 		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.

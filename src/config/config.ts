@@ -1,7 +1,7 @@
 // Constants
 export const APP_WIDTH = 1024;
 export const APP_HEIGHT = 720;
-export const APP_FRAME = false;
+export const APP_FRAME = true;
 
 export const APP_ASPECT_RATIO = 16 / 10;
 export const APP_BACKGROUND_OPACITY = 0.6;
