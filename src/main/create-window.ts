@@ -61,21 +61,19 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
     tabbingIdentifier: app.name,
     frame: APP_FRAME,
     show: false,
-
     closable: true,
-
+    maximizable: true, // Ensure this is explicitly set to true
     backgroundColor: '#ffffff', // Use a non-transparent color
     vibrancy: 'under-window',
     useContentSize: true,
-
     width: APP_WIDTH,
     minWidth: 550,
     height: APP_HEIGHT,
     minHeight: 420,
-
     ...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
     ...opts,
-  };
+};
+
 	options.webPreferences = {
 		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
 		// Prevent throttling when the window is in the background:
