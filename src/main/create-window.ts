@@ -15,46 +15,17 @@ import { __resources } from './paths';
 import { getSetting } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const path = require('path');
+const Logger = require('electron-log');
+const createPDF = require('./generatePDF'); // Ensure this path is correct
+
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
 
 const createWindow = (opts?: BrowserWindowConstructorOptions) => {
-	// const options: BrowserWindowConstructorOptions = {
-	// 	title: app.name,
-	// 	tabbingIdentifier: app.name,
-	// 	frame: APP_FRAME,
-	// 	show: true,
-
-	// 	closable: true,
-	// 	// fullscreen: true,
-	// 	// fullscreenable: false,
-	// 	// simpleFullscreen: true, // Pre-lion fullscreen support (stays in same space)
-	// 	// hasShadow: false,
-	// 	// maximizable: false,
-	// 	// minimizable: false,
-	// 	// movable: true,
-	// 	// resizable: false,
-
-	// 	backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-	// 	vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
-	// 	useContentSize: true, // The width and height would be used as web page's size, which means the actual window's size will include window frame's size and be slightly larger. Default is false.
-
-	// 	width: APP_WIDTH,
-	// 	minWidth: 550,
-	// 	height: APP_HEIGHT,
-	// 	minHeight: 420,
-
-	// 	// Conditionally enable features based on the platform
-	// 	// https://www.electronjs.org/docs/api/browser-window#new-browserwindowoptions
-	// 	// ...(is.windows ? { type: 'toolbar' } : {}),
-
-	// 	// Don't set icon on Windows so the exe's ico will be used as window and
-	// 	// taskbar's icon. See https://github.com/atom/atom/issues/4811 for more.
-	// 	...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
-	// 	...opts,
-	// };
 
 	const options: BrowserWindowConstructorOptions = {
     title: app.name,
@@ -140,6 +111,7 @@ export const createMainWindow = async () => {
 		minWidth: 550,
 		height: APP_HEIGHT,
 		minHeight: 420,
+
 	};
 
 	const window = createWindow(options);

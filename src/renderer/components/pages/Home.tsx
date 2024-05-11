@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import DateInput from '../../../components/ui/date-input';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
@@ -49,10 +50,17 @@ export function Home(props: Props) {
 	});
 	const [val, setVal] = React.useState(50);
 	const handleInputChange = (event) => {
-		setStudentData((prevStudentData) => ({
-			...prevStudentData,
-			[event.target.id]: event.target.value,
+		const { id, value } = event.target;
+		setStudentData((prev) => ({
+			...prev,
+			[id]: value,
 		}));
+	};
+
+	const handleSubmit = (event) => {
+		event.preventDefault(); // Prevent the default form submission behavior
+		console.log('Submitted Data:', studentData);
+		// Here you can also handle data sending to a server or further processing
 	};
 	return (
 		<div className="flex flex-col gap-4 items-center h-screen  overflow-auto">
@@ -68,7 +76,7 @@ export function Home(props: Props) {
 					Make changes to your account here. Make changes to your account here.
 				</TabsContent>
 				<TabsContent value="c2" className="gap-12 m-12">
-					<form className="space-y-6">
+					<form onSubmit={handleSubmit} className="space-y-6">
 						<div className="space-x-2">
 							<Label htmlFor="studentId">Student ID</Label>
 							<Input
@@ -237,16 +245,31 @@ export function Home(props: Props) {
 						</div>
 
 						<div className="space-x-2">
-							<Label htmlFor="dob">Date of Birth (DD/MM/YY)</Label>
-							<Input
-								type="text"
+							<Label htmlFor="dob">
+								Date of Birth (DD/MM/YY) according to the Christian era
+							</Label>
+							<DateInput
 								id="dob"
-								placeholder="Enter Date of Birth"
 								value={studentData.dob}
-								onChange={handleInputChange}
+								onChange={(date) =>
+									setStudentData({
+										...studentData,
+										dob: format(date, 'dd/MM/yy'),
+									})
+								}
 							/>
 						</div>
 
+						<div className="space-x-2">
+							<Label htmlFor="dobWords">Date of Birth (In words)</Label>
+							<Input
+								type="text"
+								id="dobWords"
+								placeholder="Enter Date of Birth in words"
+								value={studentData.dobWords}
+								onChange={handleInputChange}
+							/>
+						</div>
 						<div className="space-x-2">
 							<Label htmlFor="dobWords">Date of Birth (In words)</Label>
 							<Input
