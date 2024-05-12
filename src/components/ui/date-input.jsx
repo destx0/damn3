@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { format, isValid } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 
 const DateInput = ({ value, onChange }) => {
 	const [day, setDay] = useState('');
@@ -12,58 +12,57 @@ const DateInput = ({ value, onChange }) => {
 	const monthRef = useRef(null);
 	const yearRef = useRef(null);
 
-	// Synchronize internal state with external value
+	// Parse and split the external value only when it changes
 	useEffect(() => {
-		const parts = value.split('/');
-		if (parts.length === 3) {
-			setDay(parts[0]);
-			setMonth(parts[1]);
-			setYear(parts[2]);
+		if (value) {
+			const date = parse(value, 'dd/MM/yyyy', new Date());
+			if (isValid(date)) {
+				const [d, m, y] = format(date, 'dd/MM/yyyy').split('/');
+				setDay(d);
+				setMonth(m);
+				setYear(y);
+			} else {
+				setDay('');
+				setMonth('');
+				setYear('');
+			}
+		} else {
+			// Clear all fields if the external value is an empty string
+			setDay('');
+			setMonth('');
+			setYear('');
 		}
 	}, [value]);
 
-	// Construct date string when internal state changes
+	// Update external state when day, month, or year is complete and valid
 	useEffect(() => {
 		if (day.length === 2 && month.length === 2 && year.length === 4) {
-			const dateString = `${year}-${month}-${day}`;
-			const date = new Date(dateString);
+			const date = parse(`${day}/${month}/${year}`, 'dd/MM/yyyy', new Date());
 			if (isValid(date)) {
-				const formattedDate = format(date, 'dd/MM/yyyy');
-				onChange(formattedDate);
-			}
-		}
-	}, [day, month, year]);
-
-	const handleDayChange = (e) => {
-		const newDay = e.target.value.replace(/\D/g, '').slice(0, 2);
-		setDay(newDay);
-		if (newDay.length === 2) {
-			monthRef.current.focus();
-		}
-	};
-
-	const handleMonthChange = (e) => {
-		const newMonth = e.target.value.replace(/\D/g, '').slice(0, 2);
-		setMonth(newMonth);
-		if (newMonth.length === 2) {
-			yearRef.current.focus();
-		}
-	};
-
-	const handleYearChange = (e) => {
-		const newYear = e.target.value.replace(/\D/g, '').slice(0, 4);
-		setYear(newYear);
-	};
-
-	const validateDate = () => {
-		if (day && month && year) {
-			const dateString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-			const date = new Date(dateString);
-			if (!isValid(date)) {
-				setError('Invalid date');
-			} else {
+				onChange(format(date, 'dd/MM/yyyy'));
 				setError('');
+			} else {
+				setError('Invalid date');
 			}
+		}
+	}, [day, month, year, onChange]);
+
+	const handleInputChange = (ref, setState) => (e) => {
+		const value = e.target.value.replace(/\D/g, '');
+		setState(value);
+		if (value.length === 2) {
+			ref.current?.focus();
+		}
+	};
+
+	// Arrow key navigation
+	const handleKeyDown = (e, nextRef, previousRef) => {
+		if (e.key === 'ArrowRight' && nextRef) {
+			e.preventDefault();
+			nextRef.current.focus();
+		} else if (e.key === 'ArrowLeft' && previousRef) {
+			e.preventDefault();
+			previousRef.current.focus();
 		}
 	};
 
@@ -75,8 +74,9 @@ const DateInput = ({ value, onChange }) => {
 					id="day"
 					placeholder="DD"
 					value={day}
-					onChange={handleDayChange}
-					onBlur={validateDate}
+					onChange={handleInputChange(dayRef, setDay)}
+					onBlur={() => setError('')}
+					onKeyDown={(e) => handleKeyDown(e, monthRef, null)}
 					maxLength={2}
 					className="w-[60px]"
 					ref={dayRef}
@@ -87,8 +87,9 @@ const DateInput = ({ value, onChange }) => {
 					id="month"
 					placeholder="MM"
 					value={month}
-					onChange={handleMonthChange}
-					onBlur={validateDate}
+					onChange={handleInputChange(monthRef, setMonth)}
+					onBlur={() => setError('')}
+					onKeyDown={(e) => handleKeyDown(e, yearRef, dayRef)}
 					maxLength={2}
 					className="w-[60px]"
 					ref={monthRef}
@@ -99,8 +100,9 @@ const DateInput = ({ value, onChange }) => {
 					id="year"
 					placeholder="YYYY"
 					value={year}
-					onChange={handleYearChange}
-					onBlur={validateDate}
+					onChange={handleInputChange(yearRef, setYear)}
+					onBlur={() => setError('')}
+					onKeyDown={(e) => handleKeyDown(e, null, monthRef)}
 					maxLength={4}
 					className="w-[80px]"
 					ref={yearRef}
