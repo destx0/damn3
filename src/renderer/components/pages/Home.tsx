@@ -71,7 +71,7 @@ export function Home(props: Props) {
 							studentData={studentData}
 							handleInputChange={handleInputChange}
 						/>
-						{/* <div className="space-x-2">
+						<div className="space-x-2">
 							<Label htmlFor="dob">
 								Date of Birth (DD/MM/YY) according to the Christian era
 							</Label>
@@ -81,11 +81,11 @@ export function Home(props: Props) {
 								onChange={(date) =>
 									setStudentData({
 										...studentData,
-										dob: format(date, 'dd/MM/yy'),
+										dob: format(date, 'dd/MM/yyyy'),
 									})
 								}
 							/>
-						</div> */}
+						</div>
 
 						<div>
 							<Button type="submit">Submit</Button>
