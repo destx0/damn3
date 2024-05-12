@@ -19,6 +19,18 @@ const electronHandler = {
 		ipcRenderer.send(ipcChannels.APP_NOTIFICATION, options),
 	playSound: (sound: string) => ipcRenderer.send(ipcChannels.PLAY_SOUND, sound),
 	openUrl: (url: string) => ipcRenderer.send(ipcChannels.OPEN_URL, url),
+	generatePDF: (studentData) =>
+		ipcRenderer.send(ipcChannels.GENERATE_PDF, studentData),
+	onPDFGenerated: (func) => {
+		ipcRenderer.on(ipcChannels.PDF_GENERATED, (_event, message, path) =>
+			func(message, path),
+		);
+	},
+	onPDFGenerationError: (func) => {
+		ipcRenderer.on(ipcChannels.PDF_GENERATION_ERROR, (_event, message) =>
+			func(message),
+		);
+	},
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {
@@ -30,7 +42,7 @@ const electronHandler = {
 			if (!channels.includes(channel)) {
 				return;
 			}
-			return ipcRenderer.send(channel, ...args);
+			ipcRenderer.send(channel, ...args);
 		},
 		on(channel: string, func: (...args: unknown[]) => void) {
 			if (!channels.includes(channel)) {
@@ -39,7 +51,6 @@ const electronHandler = {
 			const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
 				func(...args);
 			ipcRenderer.on(channel, subscription);
-
 			return () => {
 				ipcRenderer.removeListener(channel, subscription);
 			};

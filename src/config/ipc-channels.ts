@@ -20,6 +20,9 @@ const RENDERER_READY = 'renderer-ready';
 
 const TRIGGER_APP_MENU_ITEM_BY_ID = 'trigger-app-menu-item-by-id';
 const OPEN_URL = 'open-url';
+const GENERATE_PDF = 'generate-pdf';
+const PDF_GENERATED = 'pdf-generated';
+const PDF_GENERATION_ERROR = 'pdf-generation-error';
 
 export const ipcChannels = {
 	// main -> renderer
@@ -27,16 +30,16 @@ export const ipcChannels = {
 	APP_UPDATED,
 	PRELOAD_SOUNDS,
 	PLAY_SOUND,
-
+	PDF_GENERATED,
+	PDF_GENERATION_ERROR,
 	// renderer -> main
 	RENDERER_READY,
 	GET_RENDERER_SYNC,
 	GET_APP_INFO,
 	GET_APP_PATHS,
-
 	SET_KEYBIND,
 	SET_SETTINGS,
-
 	TRIGGER_APP_MENU_ITEM_BY_ID,
 	OPEN_URL,
+	GENERATE_PDF,
 };

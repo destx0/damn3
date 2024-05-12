@@ -18,32 +18,48 @@ import windows from './windows';
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const Logger = require('electron-log');
-const createPDF = require('./generatePDF'); // Ensure this path is correct
-
+const createPDF = require('./createPDF'); // Ensure this path is correct
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
-
+function setupPDFGeneration() {
+	ipcMain.on('generate-pdf', (event, studentData) => {
+		console.log(
+			'Received generate PDF request with student data:',
+			studentData,
+		);
+		const outputPath = path.join(app.getPath('desktop'), 'student_info.pdf');
+		createPDF(studentData, outputPath)
+			.then(() => {
+				console.log('PDF generated successfully');
+				event.reply('pdf-generated', 'PDF Generated Successfully!');
+			})
+			.catch((error) => {
+				console.error('Failed to generate PDF:', error);
+				Logger.error('Failed to generate PDF', error);
+				event.reply('pdf-generation-failed', 'Failed to generate PDF');
+			});
+	});
+}
 const createWindow = (opts?: BrowserWindowConstructorOptions) => {
-
 	const options: BrowserWindowConstructorOptions = {
-    title: app.name,
-    tabbingIdentifier: app.name,
-    frame: APP_FRAME,
-    show: false,
-    closable: true,
-    maximizable: true, // Ensure this is explicitly set to true
-    backgroundColor: '#ffffff', // Use a non-transparent color
-    vibrancy: 'under-window',
-    useContentSize: true,
-    width: APP_WIDTH,
-    minWidth: 550,
-    height: APP_HEIGHT,
-    minHeight: 420,
-    ...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
-    ...opts,
-};
+		title: app.name,
+		tabbingIdentifier: app.name,
+		frame: APP_FRAME,
+		show: false,
+		closable: true,
+		maximizable: true, // Ensure this is explicitly set to true
+		backgroundColor: '#ffffff', // Use a non-transparent color
+		vibrancy: 'under-window',
+		useContentSize: true,
+		width: APP_WIDTH,
+		minWidth: 550,
+		height: APP_HEIGHT,
+		minHeight: 420,
+		...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
+		...opts,
+	};
 
 	options.webPreferences = {
 		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
@@ -111,7 +127,6 @@ export const createMainWindow = async () => {
 		minWidth: 550,
 		height: APP_HEIGHT,
 		minHeight: 420,
-
 	};
 
 	const window = createWindow(options);
@@ -127,7 +142,7 @@ export const createMainWindow = async () => {
 
 	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
-
+	setupPDFGeneration();
 	return window;
 };
 
