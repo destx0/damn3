@@ -37,15 +37,16 @@ const DateInput = ({ value, onChange }) => {
 	// Update external state when day, month, or year is complete and valid
 	useEffect(() => {
 		if (day.length === 2 && month.length === 2 && year.length === 4) {
-			const date = parse(`${day}/${month}/${year}`, 'dd/MM/yyyy', new Date());
+			const dateString = `${day}/${month}/${year}`;
+			const date = parse(dateString, 'dd/MM/yyyy', new Date());
 			if (isValid(date)) {
-				onChange(format(date, 'dd/MM/yyyy'));
+				onChange(dateString);
 				setError('');
 			} else {
 				setError('Invalid date');
 			}
 		}
-	}, [day, month, year, onChange]);
+	}, [day, month, year]);
 
 	const handleInputChange = (ref, setState) => (e) => {
 		const value = e.target.value.replace(/\D/g, '');

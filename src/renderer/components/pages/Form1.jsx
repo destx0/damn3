@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import DateInput from '../../../components/ui/date-input';
 import { StudentInfoForm } from './StudentInfoForm';
-import { format } from 'date-fns';
 
 const Form1 = () => {
 	const [studentData, setStudentData] = useState({
@@ -62,11 +61,11 @@ const Form1 = () => {
 				<DateInput
 					id="dob"
 					value={studentData.dob}
-					onChange={(date) =>
+					onChange={(dateString) =>
 						handleInputChange({
 							target: {
 								id: 'dob',
-								value: format(date, 'dd/MM/yyyy'),
+								value: dateString,
 							},
 						})
 					}
