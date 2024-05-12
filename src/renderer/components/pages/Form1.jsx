@@ -11,20 +11,31 @@ const Form1 = () => {
 		dob: '' /* other fields */,
 	});
 
-	const handleGeneratePDF = (event) => {
+	const handleGeneratePDF = async (event) => {
 		event.preventDefault();
 
-		if (!studentData) {
-			alert('Student data is missing!');
+		if (!studentData.fullName || !studentData.dob) {
+			alert('Required student data is missing!');
 			return;
 		}
 
-		console.log('Generating PDF with student data:', studentData);
-		window.electron.generatePDF(studentData);
-		window.electron.onPDFGenerated((message, path) => {
-			alert(`Success: ${message}`);
-			console.log('PDF saved at:', path);
-		});
+		console.log('Saving and generating PDF with student data:', studentData);
+
+		// Save data to the database
+		try {
+			const savedId = await window.electron.saveStudentData(studentData);
+			console.log('Data saved, ID:', savedId);
+			// Proceed to generate PDF
+			window.electron.generatePDF(studentData);
+			window.electron.onPDFGenerated((message, path) => {
+				alert(`Success: ${message}`);
+				console.log('PDF saved at:', path);
+			});
+		} catch (error) {
+			alert(`Failed to save data: ${error}`);
+			console.error('Error saving data:', error);
+		}
+
 		window.electron.onPDFGenerationError((message) => {
 			alert(`Error: ${message}`);
 		});

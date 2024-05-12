@@ -31,6 +31,8 @@ const electronHandler = {
 			func(message),
 		);
 	},
+	saveStudentData: (studentData) =>
+		ipcRenderer.invoke(ipcChannels.SAVE_STUDENT_DATA, studentData),
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {
@@ -68,5 +70,3 @@ const electronHandler = {
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
-
-export type ElectronHandler = typeof electronHandler;

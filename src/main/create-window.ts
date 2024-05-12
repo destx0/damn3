@@ -5,8 +5,9 @@ import {
 	IpcMainEvent,
 	app,
 	shell,
+	ipcMain,
 } from 'electron';
-import Logger from 'electron-log/main';
+import Logger from 'electron-log';
 import path from 'path';
 import { APP_FRAME, APP_HEIGHT, APP_WIDTH } from '../config/config';
 import { setupContextMenu } from './context-menu';
@@ -15,33 +16,64 @@ import { __resources } from './paths';
 import { getSetting } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
-const path = require('path');
-const Logger = require('electron-log');
-const createPDF = require('./createPDF'); // Ensure this path is correct
+import createPDF from './createPDF'; // Ensure this path is correct
+import sqlite3 from 'sqlite3';
+
+// SQLite Database setup
+const db = new sqlite3.Database(
+	'./mydatabase.db',
+	sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+	(err) => {
+		if (err) {
+			Logger.error('Error opening database:', err);
+		} else {
+			db.run(
+				'CREATE TABLE IF NOT EXISTS dummyData (id INTEGER PRIMARY KEY AUTOINCREMENT, info TEXT)',
+			);
+		}
+	},
+);
+
+ipcMain.handle('insert-dummy-data', async (event, info) => {
+	return new Promise((resolve, reject) => {
+		db.run('INSERT INTO dummyData(info) VALUES(?)', [info], function (err) {
+			if (err) {
+				Logger.error('Error inserting data:', err);
+				reject(err);
+			} else {
+				Logger.info(`A row has been inserted with rowid ${this.lastID}`);
+				resolve(this.lastID);
+			}
+		});
+	});
+});
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
 };
+
 function setupPDFGeneration() {
-	ipcMain.on('generate-pdf', (event, studentData) => {
+	ipcMain.on('generate-pdf', async (event, studentData) => {
 		console.log(
 			'Received generate PDF request with student data:',
 			studentData,
 		);
 		const outputPath = path.join(app.getPath('desktop'), 'student_info.pdf');
-		createPDF(studentData, outputPath)
-			.then(() => {
-				console.log('PDF generated successfully');
-				event.reply('pdf-generated', 'PDF Generated Successfully!');
-			})
-			.catch((error) => {
-				console.error('Failed to generate PDF:', error);
-				Logger.error('Failed to generate PDF', error);
-				event.reply('pdf-generation-failed', 'Failed to generate PDF');
-			});
+		try {
+			await createPDF(studentData, outputPath);
+			console.log('PDF generated successfully');
+			event.reply('pdf-generated', 'PDF Generated Successfully!');
+		} catch (error) {
+			console.error('Failed to generate PDF:', error);
+			Logger.error('Failed to generate PDF', error);
+			event.reply('pdf-generation-failed', 'Failed to generate PDF');
+		}
 	});
 }
+
+
+
+
 const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
@@ -62,13 +94,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	};
 
 	options.webPreferences = {
-		webSecurity: !is.development, // Required for loading sounds, comment out if not using sounds
-		// Prevent throttling when the window is in the background:
-		// backgroundThrottling: false,
-		// Disable the `auxclick` feature so that `click` events are triggered in
-		// response to a middle-click.
-		// (Ref: https://github.com/atom/atom/pull/12696#issuecomment-290496960)
-		disableBlinkFeatures: 'Auxclick',
+		webSecurity: !is.development,
 		preload: app.isPackaged
 			? path.join(__dirname, 'preload.js')
 			: path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -76,28 +102,8 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 
 	const browserWindow = new BrowserWindow(options);
 
-	browserWindow.on('unresponsive', (event: IpcMainEvent) => {
-		Logger.error(`Window unresponsive: ${event.sender}`);
-	});
-
-	browserWindow.webContents.on('did-fail-load', (event: any) => {
-		Logger.error(`Window failed load: ${event?.sender}`);
-	});
-
-	browserWindow.webContents.on('did-finish-load', () => {
-		Logger.info('Window finished load');
-	});
-
-	// Clean
-	browserWindow.on('closed', () => {
-		Logger.status('Window closed');
-	});
-
-	// Open urls in the user's browser
-	browserWindow.webContents.setWindowOpenHandler((data) => {
-		shell.openExternal(data.url);
-		return { action: 'deny' };
-	});
+	// Event listeners for the browser window
+	setupEventListeners(browserWindow);
 
 	// Create application menu
 	const menuBuilder = new MenuBuilder(browserWindow);
@@ -109,30 +115,43 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	return browserWindow;
 };
 
+function setupEventListeners(window) {
+	window.on('unresponsive', (event) => {
+		Logger.error(`Window unresponsive: ${event.sender}`);
+	});
+
+	window.webContents.on('did-fail-load', (event) => {
+		Logger.error(`Window failed load: ${event?.sender}`);
+	});
+
+	window.webContents.on('did-finish-load', () => {
+		Logger.info('Window finished load');
+	});
+
+	window.on('closed', () => {
+		Logger.status('Window closed');
+	});
+
+	window.webContents.setWindowOpenHandler((data) => {
+		shell.openExternal(data.url);
+		return { action: 'deny' };
+	});
+}
+
 export const createMainWindow = async () => {
-	const options: BrowserWindowConstructorOptions = {
-		// acceptFirstMouse: true, // macOS: Whether clicking an inactive window will also click through to the web contents. Default is false
-		// alwaysOnTop: true,
+	const window = createWindow({
 		show: false,
-		// skipTaskbar: true, // Whether to show the window in taskbar. Default is false.
-		titleBarStyle: 'hiddenInset', // 'default', 'hidden', 'hiddenInset', 'customButtonsOnHover
-		titleBarOverlay: true, // https://developer.mozilla.org/en-US/docs/Web/API/Window_Controls_Overlay_API
+		titleBarStyle: 'hiddenInset',
+		titleBarOverlay: true,
 		trafficLightPosition: { x: 10, y: 9 },
-
-		transparent: true, // Makes the window transparent. Default is false. On Windows, does not work unless the window is frameless.
-		// backgroundColor: '#00000000', // transparent hexadecimal or anything with transparency,
-		vibrancy: 'under-window', // appearance-based, titlebar, selection, menu, popover, sidebar, header, sheet, window, hud, fullscreen-ui, tooltip, content, under-window, or under-page.
-
+		transparent: true,
 		width: APP_WIDTH,
 		minWidth: 550,
 		height: APP_HEIGHT,
 		minHeight: 420,
-	};
-
-	const window = createWindow(options);
+	});
 
 	window.on('ready-to-show', () => {
-		// Setting: Start minimized
 		if (process.env.START_MINIMIZED || getSetting('startMinimized')) {
 			window.minimize();
 		} else {
@@ -140,7 +159,6 @@ export const createMainWindow = async () => {
 		}
 	});
 
-	// Load the window
 	window.loadURL(resolveHtmlPath('index.html'));
 	setupPDFGeneration();
 	return window;
@@ -154,7 +172,6 @@ export const createChildWindow = async () => {
 		windows.mainWindow?.focus();
 	});
 
-	// Load the window
 	window.loadURL(resolveHtmlPath('child.html'));
 
 	return window;

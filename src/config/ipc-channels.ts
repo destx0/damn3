@@ -24,6 +24,9 @@ const GENERATE_PDF = 'generate-pdf';
 const PDF_GENERATED = 'pdf-generated';
 const PDF_GENERATION_ERROR = 'pdf-generation-error';
 
+// Adding new channel for saving student data
+const SAVE_STUDENT_DATA = 'save-student-data';
+
 export const ipcChannels = {
 	// main -> renderer
 	APP_NOTIFICATION,
@@ -42,4 +45,5 @@ export const ipcChannels = {
 	TRIGGER_APP_MENU_ITEM_BY_ID,
 	OPEN_URL,
 	GENERATE_PDF,
+	SAVE_STUDENT_DATA, // newly added channel for saving student data
 };
