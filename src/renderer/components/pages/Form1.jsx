@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import DateInput from '../../../components/ui/date-input';
 import { StudentInfoForm } from './StudentInfoForm';
 
 const Form1 = () => {
-	const [studentData, setStudentData] = useState({
-		fullName: '',
-		dob: '' /* other fields */,
-	});
+	const [studentData, setStudentData] = useState({});
 
 	const handleGeneratePDF = async (event) => {
 		event.preventDefault();
 
+		// Validation or other checks can be performed here
 		if (!studentData.fullName || !studentData.dob) {
 			alert('Required student data is missing!');
 			return;
@@ -20,11 +16,10 @@ const Form1 = () => {
 
 		console.log('Saving and generating PDF with student data:', studentData);
 
-		// Save data to the database
+		// Save and generate PDF (assuming this functionality is correctly implemented)
 		try {
 			const savedId = await window.electron.saveStudentData(studentData);
 			console.log('Data saved, ID:', savedId);
-			// Proceed to generate PDF
 			window.electron.generatePDF(studentData);
 			window.electron.onPDFGenerated((message, path) => {
 				alert(`Success: ${message}`);
@@ -54,23 +49,6 @@ const Form1 = () => {
 				studentData={studentData}
 				handleInputChange={handleInputChange}
 			/>
-			<div className="space-x-2">
-				<Label htmlFor="dob">
-					Date of Birth (DD/MM/YY) according to the Christian era
-				</Label>
-				<DateInput
-					id="dob"
-					value={studentData.dob}
-					onChange={(dateString) =>
-						handleInputChange({
-							target: {
-								id: 'dob',
-								value: dateString,
-							},
-						})
-					}
-				/>
-			</div>
 			<Button type="submit">Submit</Button>
 		</form>
 	);

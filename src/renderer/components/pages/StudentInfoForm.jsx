@@ -1,21 +1,39 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
+import DateInput from '../../../components/ui/date-input';
 import { Label } from '@/components/ui/label';
+import fieldData from '@/renderer/config/formFieldConfig';
 
 export function StudentInfoForm({ studentData, handleInputChange }) {
 	return (
 		<>
-			<div className="space-x-2">
-				<Label htmlFor="fullName">Name of the student in full (Name)</Label>
-				<Input
-					type="text"
-					id="fullName"
-					placeholder="Enter Full Name"
-					value={studentData.fullName}
-					onChange={handleInputChange}
-				/>
-			</div>
-			{/* Add more input fields here following the same pattern */}
+			{fieldData.map((field) => (
+				<div key={field.id} className="space-x-2">
+					<Label htmlFor={field.id}>{field.label}</Label>
+					{field.type === 'text' ? (
+						<Input
+							type="text"
+							id={field.id}
+							placeholder={field.placeholder}
+							value={studentData[field.id] || ''}
+							onChange={handleInputChange}
+						/>
+					) : (
+						<DateInput
+							id={field.id}
+							value={studentData[field.id] || ''}
+							onChange={(dateString) =>
+								handleInputChange({
+									target: {
+										id: field.id,
+										value: dateString,
+									},
+								})
+							}
+						/>
+					)}
+				</div>
+			))}
 		</>
 	);
 }
