@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import DateInput from '../../../components/ui/date-input';
+import DateInput from '@/components/ui/date-input';
 import { Label } from '@/components/ui/label';
 import fieldData from '@/renderer/config/formFieldConfig';
 
