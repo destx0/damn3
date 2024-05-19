@@ -11,36 +11,16 @@ import {
 } from '@/components/ui/table';
 
 const AllStudents = () => {
-	const [students, setStudents] = useState([
-		{
-			studentId: 'S001',
-			name: 'John Doe',
-			dob: '2000-01-01',
-			lastAttendedSchool: 'Springfield High',
-			currentStandard: '10th Grade',
-		},
-		{
-			studentId: 'S002',
-			name: 'Jane Smith',
-			dob: '2001-02-02',
-			lastAttendedSchool: 'Riverview Middle School',
-			currentStandard: '11th Grade',
-		},
-		{
-			studentId: 'S003',
-			name: 'Alice Johnson',
-			dob: '2002-03-03',
-			lastAttendedSchool: 'Westside Elementary',
-			currentStandard: '9th Grade',
-		},
-		{
-			studentId: 'S004',
-			name: 'Bob Brown',
-			dob: '2003-04-04',
-			lastAttendedSchool: 'Northgate Academy',
-			currentStandard: '12th Grade',
-		},
-	]);
+	const [students, setStudents] = useState([]);
+
+	useEffect(() => {
+		const fetchStudents = async () => {
+			const fetchedStudents = await window.electron.getStudents();
+			setStudents(fetchedStudents);
+		};
+
+		fetchStudents();
+	}, []);
 
 	return (
 		<Table>

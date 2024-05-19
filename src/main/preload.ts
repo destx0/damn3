@@ -31,6 +31,8 @@ const electronHandler = {
 			func(message),
 		);
 	},
+	addStudent: (student) => ipcRenderer.invoke('add-student', student),
+	getStudents: () => ipcRenderer.invoke('get-students'),
 
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {

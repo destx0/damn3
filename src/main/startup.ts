@@ -18,8 +18,8 @@ import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
 import path from 'path';
-import sqlite3 from 'sqlite3';
 import { ipcChannels } from '../config/ipc-channels';
+import './database'; // Import the database module
 
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
