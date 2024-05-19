@@ -6,7 +6,7 @@ import AllStudents from './AllStudents';
 export function Home() {
 	return (
 		<div className="flex flex-col gap-4 items-center h-screen overflow-auto">
-			<Tabs defaultValue="c2" className="w-screen p-8 justify-center">
+			<Tabs defaultValue="c1" className="w-screen p-8 justify-center">
 				<TabsList>
 					<TabsTrigger value="c1">All Students</TabsTrigger>
 					<TabsTrigger value="c2">Add Leave Certificate</TabsTrigger>

@@ -1,4 +1,4 @@
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import Logger from 'electron-log/main';
 import { $init } from '../config/strings';
 import analytics from './analytics';
@@ -17,6 +17,12 @@ import sounds from './sounds';
 import tray from './tray';
 import { debugInfo, is } from './util';
 import windows from './windows';
+import path from 'path';
+import sqlite3 from 'sqlite3';
+import { ipcChannels } from '../config/ipc-channels';
+
+// Database initialization
+let db: sqlite3.Database;
 
 export const startup = () => {
 	console.timeLog(app.name, $init.startup);
@@ -44,6 +50,19 @@ export const startup = () => {
 
 	// Register app listeners, e.g. `app.on()`
 	appListeners.register();
+
+	// Initialize the database
+	db = new sqlite3.Database(
+		path.join(__dirname, '..', 'students.db'),
+		sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+		(err) => {
+			if (err) {
+				console.error('Error when connecting to the database', err);
+			} else {
+				console.log('Database connection established');
+			}
+		},
+	);
 
 	Logger.status($init.started);
 	console.timeLog(app.name, $init.started);
@@ -78,6 +97,37 @@ export const ready = async () => {
 	// Register custom protocol like `app://`
 	protocol.initialize();
 
+	// Initialize IPC handlers
+	ipcMain.handle(ipcChannels.FETCH_STUDENT_DATA, (event) => {
+		return new Promise((resolve, reject) => {
+			db.all('SELECT * FROM students', (err, rows) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(rows);
+				}
+			});
+		});
+	});
+
+	ipcMain.handle(ipcChannels.SAVE_STUDENT_DATA, (event, studentData) => {
+		return new Promise((resolve, reject) => {
+			const { studentId, name, dob, lastAttendedSchool, currentStandard } =
+				studentData;
+			db.run(
+				'INSERT INTO students (studentId, name, dob, lastAttendedSchool, currentStandard) VALUES (?, ?, ?, ?, ?)',
+				[studentId, name, dob, lastAttendedSchool, currentStandard],
+				(err) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve({ success: true });
+					}
+				},
+			);
+		});
+	});
+
 	// Auto updates
 	// eslint-disable-next-line no-new
 	new AutoUpdate();
@@ -96,3 +146,6 @@ export const idle = async () => {
 	Logger.status($init.idle);
 	console.timeLog(app.name, $init.idle);
 };
+
+// Ensure the ready function is called
+app.whenReady().then(ready);

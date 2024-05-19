@@ -33,6 +33,7 @@ const electronHandler = {
 	},
 	saveStudentData: (studentData) =>
 		ipcRenderer.invoke(ipcChannels.SAVE_STUDENT_DATA, studentData),
+	fetchStudents: () => ipcRenderer.invoke(ipcChannels.FETCH_STUDENT_DATA),
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {
