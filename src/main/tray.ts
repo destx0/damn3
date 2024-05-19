@@ -4,10 +4,10 @@ import { __resources } from './paths';
 import { is } from './util';
 import windows from './windows';
 
-// mac needs dark/light versions
+// macOS needs dark/light versions
 const systemIcon = () => {
 	if (is.macos) {
-		// icon needs to be in format 'xxxTemplate' to work with system theme on mac
+		// icon needs to be in format 'xxxTemplate' to work with system theme on macOS
 		return 'tray-Template.png';
 	}
 
@@ -19,6 +19,7 @@ const systemIcon = () => {
 };
 
 const getIconPath = () => {
+	// Using relative path to ensure compatibility
 	return path.join(__resources, 'icons', systemIcon());
 };
 
