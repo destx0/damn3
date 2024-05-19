@@ -15,8 +15,18 @@ const AllStudents = () => {
 
 	useEffect(() => {
 		const fetchStudents = async () => {
-			const fetchedStudents = await window.electron.getStudents();
-			setStudents(fetchedStudents);
+			try {
+				const result = await window.electron.getStudents();
+				if (result.success && Array.isArray(result.data)) {
+					setStudents(result.data);
+				} else {
+					console.error('Failed to fetch students:', result.error);
+					setStudents([]); // Ensure students is always an array
+				}
+			} catch (error) {
+				console.error('Error fetching students:', error);
+				setStudents([]); // Ensure students is always an array
+			}
 		};
 
 		fetchStudents();

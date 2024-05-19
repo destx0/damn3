@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import path from 'path';
 import Database from 'better-sqlite3';
+import { ipcChannels } from '../config/ipc-channels'; // Make sure to import ipcChannels correctly
 
 // Database setup
 const dbPath = path.join(__dirname, 'test-database.sqlite');
@@ -34,73 +35,83 @@ db.exec(`CREATE TABLE IF NOT EXISTS students (
   remarks TEXT
 )`);
 
-// IPC handlers
-ipcMain.handle('add-student', (event, student) => {
-	const {
-		studentId,
-		aadharNo,
-		name,
-		surname,
-		fathersName,
-		mothersName,
-		religion,
-		caste,
-		subCaste,
-		placeOfBirth,
-		taluka,
-		district,
-		state,
-		dob,
-		lastAttendedSchool,
-		lastSchoolStandard,
-		dateOfAdmission,
-		admissionStandard,
-		progress,
-		conduct,
-		dateOfLeaving,
-		currentStandard,
-		reasonOfLeaving,
-		remarks,
-	} = student;
+ipcMain.handle(ipcChannels.SAVE_STUDENT_DATA, (event, student) => {
+	try {
+		const {
+			studentId,
+			aadharNo,
+			name,
+			surname,
+			fathersName,
+			mothersName,
+			religion,
+			caste,
+			subCaste,
+			placeOfBirth,
+			taluka,
+			district,
+			state,
+			dob,
+			lastAttendedSchool,
+			lastSchoolStandard,
+			dateOfAdmission,
+			admissionStandard,
+			progress,
+			conduct,
+			dateOfLeaving,
+			currentStandard,
+			reasonOfLeaving,
+			remarks,
+		} = student;
 
-	const stmt = db.prepare(`INSERT INTO students (
-    studentId, aadharNo, name, surname, fathersName, mothersName, religion, caste, subCaste,
-    placeOfBirth, taluka, district, state, dob, lastAttendedSchool, lastSchoolStandard,
-    dateOfAdmission, admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
-    reasonOfLeaving, remarks
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+		const stmt = db.prepare(`INSERT INTO students (
+			studentId, aadharNo, name, surname, fathersName, mothersName, religion, caste, subCaste,
+			placeOfBirth, taluka, district, state, dob, lastAttendedSchool, lastSchoolStandard,
+			dateOfAdmission, admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
+			reasonOfLeaving, remarks
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
 
-	const info = stmt.run(
-		studentId,
-		aadharNo,
-		name,
-		surname,
-		fathersName,
-		mothersName,
-		religion,
-		caste,
-		subCaste,
-		placeOfBirth,
-		taluka,
-		district,
-		state,
-		dob,
-		lastAttendedSchool,
-		lastSchoolStandard,
-		dateOfAdmission,
-		admissionStandard,
-		progress,
-		conduct,
-		dateOfLeaving,
-		currentStandard,
-		reasonOfLeaving,
-		remarks,
-	);
+		const info = stmt.run(
+			studentId,
+			aadharNo,
+			name,
+			surname,
+			fathersName,
+			mothersName,
+			religion,
+			caste,
+			subCaste,
+			placeOfBirth,
+			taluka,
+			district,
+			state,
+			dob,
+			lastAttendedSchool,
+			lastSchoolStandard,
+			dateOfAdmission,
+			admissionStandard,
+			progress,
+			conduct,
+			dateOfLeaving,
+			currentStandard,
+			reasonOfLeaving,
+			remarks,
+		);
 
-	return info.changes > 0;
+		return { success: info.changes > 0 };
+	} catch (error) {
+		console.error('Error saving student data:', error);
+		return { success: false, error: error.message };
+	}
 });
 
-ipcMain.handle('get-students', () => {
-	const stmt = db.prepare('SELECT * FROM students');
-	return stmt.all();
+ipcMain.handle(ipcChannels.FETCH_STUDENT_DATA, () => {
+	try {
+		const stmt = db.prepare('SELECT * FROM students');
+		const students = stmt.all();
+		return { success: true, data: students };
+	} catch (error) {
+		console.error('Error fetching student data:', error);
+		return { success: false, error: error.message };
+	}
 });

@@ -24,7 +24,7 @@ const GENERATE_PDF = 'generate-pdf';
 const PDF_GENERATED = 'pdf-generated';
 const PDF_GENERATION_ERROR = 'pdf-generation-error';
 
-// Adding new channel for fetching student data
+// Adding new channels for fetching and saving student data
 const FETCH_STUDENT_DATA = 'fetch-student-data';
 const SAVE_STUDENT_DATA = 'save-student-data';
 

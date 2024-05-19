@@ -2,7 +2,6 @@
 import {
 	BrowserWindow,
 	BrowserWindowConstructorOptions,
-	IpcMainEvent,
 	app,
 	shell,
 	ipcMain,
@@ -16,10 +15,7 @@ import { __resources } from './paths';
 import { getSetting } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
-import createPDF from './createPDF'; // Ensure this path is correct
-import sqlite3 from 'sqlite3';
-
-
+import createPDF from './createPDF';
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);
@@ -44,9 +40,6 @@ function setupPDFGeneration() {
 	});
 }
 
-
-
-
 const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
@@ -54,8 +47,9 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		frame: APP_FRAME,
 		show: false,
 		closable: true,
-		maximizable: true, // Ensure this is explicitly set to true
-		backgroundColor: '#ffffff', // Use a non-transparent color
+		maximizable: true,
+		resizable: true,
+		backgroundColor: '#ffffff',
 		vibrancy: 'under-window',
 		useContentSize: true,
 		width: APP_WIDTH,
@@ -88,7 +82,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	return browserWindow;
 };
 
-function setupEventListeners(window) {
+function setupEventListeners(window: BrowserWindow) {
 	window.on('unresponsive', (event) => {
 		Logger.error(`Window unresponsive: ${event.sender}`);
 	});
@@ -118,6 +112,8 @@ export const createMainWindow = async () => {
 		titleBarOverlay: true,
 		trafficLightPosition: { x: 10, y: 9 },
 		transparent: true,
+		resizable: true,
+		maximizable: true,
 		width: APP_WIDTH,
 		minWidth: 550,
 		height: APP_HEIGHT,
@@ -138,7 +134,11 @@ export const createMainWindow = async () => {
 };
 
 export const createChildWindow = async () => {
-	const window = createWindow({ frame: true });
+	const window = createWindow({
+		frame: true,
+		resizable: true,
+		maximizable: true,
+	});
 
 	window.on('ready-to-show', () => {
 		window.show();

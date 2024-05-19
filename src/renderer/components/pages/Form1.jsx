@@ -9,25 +9,37 @@ const Form1 = () => {
 		event.preventDefault();
 
 		// Validation or other checks can be performed here
-		if (!studentData.fullName || !studentData.dob) {
+		if (!studentData.studentId || !studentData.name || !studentData.dob) {
 			alert('Required student data is missing!');
 			return;
 		}
 
-		console.log('Saving and generating PDF with student data:', studentData);
+		console.log('Saving student data:', studentData);
 
-		// Save and generate PDF (assuming this functionality is correctly implemented)
+		// Save student data to the database
 		try {
-			const savedId = await window.electron.saveStudentData(studentData);
-			console.log('Data saved, ID:', savedId);
+			const success = await window.electron.addStudent(studentData);
+			if (success) {
+				console.log('Data saved successfully');
+				alert('Student data saved successfully!');
+			} else {
+				throw new Error('Failed to save student data');
+			}
+		} catch (error) {
+			alert(`Failed to save data: ${error}`);
+			console.error('Error saving data:', error);
+		}
+
+		// Generate PDF (assuming this functionality is correctly implemented)
+		try {
 			window.electron.generatePDF(studentData);
 			window.electron.onPDFGenerated((message, path) => {
 				alert(`Success: ${message}`);
 				console.log('PDF saved at:', path);
 			});
 		} catch (error) {
-			alert(`Failed to save data: ${error}`);
-			console.error('Error saving data:', error);
+			alert(`Failed to generate PDF: ${error}`);
+			console.error('Error generating PDF:', error);
 		}
 
 		window.electron.onPDFGenerationError((message) => {
