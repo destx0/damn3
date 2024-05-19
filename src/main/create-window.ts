@@ -19,34 +19,7 @@ import windows from './windows';
 import createPDF from './createPDF'; // Ensure this path is correct
 import sqlite3 from 'sqlite3';
 
-// SQLite Database setup
-const db = new sqlite3.Database(
-	'./mydatabase.db',
-	sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
-	(err) => {
-		if (err) {
-			Logger.error('Error opening database:', err);
-		} else {
-			db.run(
-				'CREATE TABLE IF NOT EXISTS dummyData (id INTEGER PRIMARY KEY AUTOINCREMENT, info TEXT)',
-			);
-		}
-	},
-);
 
-ipcMain.handle('insert-dummy-data', async (event, info) => {
-	return new Promise((resolve, reject) => {
-		db.run('INSERT INTO dummyData(info) VALUES(?)', [info], function (err) {
-			if (err) {
-				Logger.error('Error inserting data:', err);
-				reject(err);
-			} else {
-				Logger.info(`A row has been inserted with rowid ${this.lastID}`);
-				resolve(this.lastID);
-			}
-		});
-	});
-});
 
 const getAssetPath = (...paths: string[]): string => {
 	return path.join(__resources, ...paths);

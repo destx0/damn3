@@ -19,16 +19,7 @@ import { serializeMenu, triggerMenuItemById } from './utils/menu-utils';
 import sqlite3 from 'sqlite3';
 import Logger from 'electron-log';
 
-// Database setup
-const db = new sqlite3.Database('./mydatabase.db', (err) => {
-	if (err) {
-		Logger.error('Database opening error:', err);
-	} else {
-		db.run(
-			'CREATE TABLE IF NOT EXISTS students (id INTEGER PRIMARY KEY AUTOINCREMENT, fullName TEXT, dob TEXT)',
-		);
-	}
-});
+
 
 export default {
 	initialize() {
@@ -75,27 +66,7 @@ export default {
 				},
 			);
 
-			ipcMain.handle(
-				ipcChannels.SAVE_STUDENT_DATA,
-				async (event, studentData) => {
-					return new Promise((resolve, reject) => {
-						const query = `INSERT INTO students (fullName, dob) VALUES (?, ?)`;
-						db.run(
-							query,
-							[studentData.fullName, studentData.dob],
-							function (err) {
-								if (err) {
-									Logger.error('Error inserting student data:', err);
-									reject(err);
-								} else {
-									Logger.info(`Student data saved with ID: ${this.lastID}`);
-									resolve(this.lastID);
-								}
-							},
-						);
-					});
-				},
-			);
+			
 
 			ipcMain.on(ipcChannels.APP_NOTIFICATION, (_event, options: any) => {
 				notification(options);
