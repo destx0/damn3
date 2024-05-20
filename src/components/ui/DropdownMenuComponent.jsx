@@ -20,8 +20,10 @@ const DropdownMenuComponent = ({ student }) => {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent
-				align="end"
-				className="bg-white border border-gray-200 rounded-md shadow-lg"
+				align="start"
+				side="bottom"
+				sideOffset={5}
+				className="w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
 			>
 				<DropdownMenuLabel className="text-gray-700 font-semibold">
 					Actions
