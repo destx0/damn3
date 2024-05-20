@@ -1,10 +1,20 @@
+'use client';
+
 import React, { useState } from 'react';
 import {
 	flexRender,
 	getCoreRowModel,
 	useReactTable,
+	getPaginationRowModel,
 } from '@tanstack/react-table';
 
+import { Button } from '@/components/ui/button';
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
 	Table,
 	TableBody,
@@ -16,6 +26,7 @@ import {
 import PaginationComponent from '@/components/ui/PaginationComponent'; // Adjust the path as necessary
 
 export function DataTable({ columns, data }) {
+	const [columnVisibility, setColumnVisibility] = useState({});
 	const [pageIndex, setPageIndex] = useState(0);
 	const [pageSize, setPageSize] = useState(5);
 
@@ -29,14 +40,39 @@ export function DataTable({ columns, data }) {
 	const table = useReactTable({
 		data: currentData,
 		columns,
-		pageCount,
-		state: { pageIndex, pageSize },
+		state: { columnVisibility, pageIndex, pageSize },
+		onColumnVisibilityChange: setColumnVisibility,
 		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
 		manualPagination: true,
 	});
 
 	return (
 		<div className="container mx-auto px-4 py-8">
+			<div className="flex items-center py-4">
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="ml-auto">
+							Columns
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						{table
+							.getAllColumns()
+							.filter((column) => column.getCanHide())
+							.map((column) => (
+								<DropdownMenuCheckboxItem
+									key={column.id}
+									className="capitalize"
+									checked={column.getIsVisible()}
+									onCheckedChange={(value) => column.toggleVisibility(!!value)}
+								>
+									{column.id}
+								</DropdownMenuCheckboxItem>
+							))}
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
 			<div className="rounded-lg shadow overflow-hidden border border-gray-300">
 				<Table className="min-w-full divide-y divide-gray-300">
 					<TableHeader className="bg-gray-300">
