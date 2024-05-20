@@ -11,7 +11,7 @@ export function Home() {
 					<TabsTrigger value="c1">All Students</TabsTrigger>
 					<TabsTrigger value="c2">Add Leave Certificate</TabsTrigger>
 				</TabsList>
-				<TabsContent value="c1" className="gap-12 m-12">
+				<TabsContent value="c1" className="">
 					<AllStudents />
 				</TabsContent>
 				<TabsContent value="c2" className="gap-12 m-12">
