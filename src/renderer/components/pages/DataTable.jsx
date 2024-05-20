@@ -21,38 +21,49 @@ export function DataTable({ columns, data }) {
 	});
 
 	return (
-		<Table className="min-w-full divide-y divide-gray-200">
-			<TableHead className="bg-gray-50">
-				{table.getHeaderGroups().map((headerGroup) => (
-					<TableRow key={headerGroup.id}>
-						{headerGroup.headers.map((header) => (
-							<TableHeader
-								key={header.id}
-								className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+		<div className="rounded-md border">
+			<Table>
+				<TableHeader>
+					{table.getHeaderGroups().map((headerGroup) => (
+						<TableRow key={headerGroup.id}>
+							{headerGroup.headers.map((header) => {
+								return (
+									<TableHead key={header.id}>
+										{header.isPlaceholder
+											? null
+											: flexRender(
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
+									</TableHead>
+								);
+							})}
+						</TableRow>
+					))}
+				</TableHeader>
+				<TableBody>
+					{table.getRowModel().rows?.length ? (
+						table.getRowModel().rows.map((row) => (
+							<TableRow
+								key={row.id}
+								data-state={row.getIsSelected() && 'selected'}
 							>
-								{flexRender(
-									header.column.columnDef.header,
-									header.getContext(),
-								)}
-							</TableHeader>
-						))}
-					</TableRow>
-				))}
-			</TableHead>
-			<TableBody className="bg-white divide-y divide-gray-200">
-				{table.getRowModel().rows.map((row) => (
-					<TableRow key={row.id}>
-						{row.getVisibleCells().map((cell) => (
-							<TableCell
-								key={cell.id}
-								className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-							>
-								{flexRender(cell.column.columnDef.cell, cell.getContext())}
+								{row.getVisibleCells().map((cell) => (
+									<TableCell key={cell.id}>
+										{flexRender(cell.column.columnDef.cell, cell.getContext())}
+									</TableCell>
+								))}
+							</TableRow>
+						))
+					) : (
+						<TableRow>
+							<TableCell colSpan={columns.length} className="h-24 text-center">
+								No results.
 							</TableCell>
-						))}
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+		</div>
 	);
 }
