@@ -13,15 +13,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import {
-	Pagination,
-	PaginationContent,
-	PaginationEllipsis,
-	PaginationItem,
-	PaginationLink,
-	PaginationNext,
-	PaginationPrevious,
-} from '@/components/ui/pagination';
+import PaginationComponent from '@/components/ui/PaginationComponent'; // Adjust the path as necessary
 
 export function DataTable({ columns, data }) {
 	const [pageIndex, setPageIndex] = useState(0);
@@ -86,40 +78,11 @@ export function DataTable({ columns, data }) {
 				</Table>
 			</div>
 			<div className="p-4">
-				<Pagination>
-					<PaginationContent>
-						<PaginationItem>
-							<PaginationPrevious
-								href="#"
-								onClick={() => {
-									if (pageIndex > 0) setPageIndex(pageIndex - 1);
-								}}
-								disabled={!table.getCanPreviousPage()}
-							/>
-						</PaginationItem>
-						{Array.from({ length: pageCount }, (_, index) => (
-							<PaginationItem key={index}>
-								<PaginationLink
-									href="#"
-									isActive={pageIndex === index}
-									onClick={() => setPageIndex(index)}
-								>
-									{index + 1}
-								</PaginationLink>
-							</PaginationItem>
-						))}
-						{pageCount > 5 && <PaginationEllipsis />}
-						<PaginationItem>
-							<PaginationNext
-								href="#"
-								onClick={() => {
-									if (pageIndex < pageCount - 1) setPageIndex(pageIndex + 1);
-								}}
-								disabled={!table.getCanNextPage()}
-							/>
-						</PaginationItem>
-					</PaginationContent>
-				</Pagination>
+				<PaginationComponent
+					pageIndex={pageIndex}
+					pageCount={pageCount}
+					setPageIndex={setPageIndex}
+				/>
 			</div>
 		</div>
 	);

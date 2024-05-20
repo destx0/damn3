@@ -1,7 +1,7 @@
 'use client';
 
 import { Menu } from 'lucide-react';
-import DropdownMenuComponent from './DropdownMenuComponent'; // Adjust the path as necessary
+import DropdownMenuComponent from '../../../components/ui/DropdownMenuComponent'; // Adjust the path as necessary
 
 export const columns = [
 	{
