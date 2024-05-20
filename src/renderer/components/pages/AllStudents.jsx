@@ -1,100 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import {
-	Table,
-	TableBody,
-	TableCaption,
-	TableCell,
-	TableFooter,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
+import { columns } from './columns';
+import { DataTable } from './DataTable';
 
-const AllStudents = () => {
-	const [students, setStudents] = useState([]);
-
-	useEffect(() => {
-		const fetchStudents = async () => {
-			try {
-				const result = await window.electron.getStudents();
-				if (result.success && Array.isArray(result.data)) {
-					setStudents(result.data);
-				} else {
-					console.error('Failed to fetch students:', result.error);
-					setStudents([]); // Ensure students is always an array
-				}
-			} catch (error) {
-				console.error('Error fetching students:', error);
-				setStudents([]); // Ensure students is always an array
-			}
-		};
-
-		fetchStudents();
-	}, []);
+export default function AllStudents() {
+	const data = [
+		{
+			studentId: 'S001',
+			name: 'John Doe',
+			fathersName: 'Robert Doe',
+			mothersName: 'Jane Doe',
+			aadharNo: '1234-5678-9101',
+			dob: '2005-06-15',
+			placeOfBirth: 'New York',
+			religion: 'Christianity',
+			caste: 'General',
+			subCaste: 'N/A',
+			taluka: 'Manhattan',
+			district: 'New York',
+			state: 'New York',
+			lastAttendedSchool: 'NY High School',
+			lastSchoolStandard: '10th',
+			dateOfAdmission: '2020-06-20',
+			admissionStandard: '11th',
+			currentStandard: '12th',
+			progress: 'Excellent',
+			conduct: 'Good',
+			dateOfLeaving: 'N/A',
+			reasonOfLeaving: 'N/A',
+			remarks: 'N/A',
+		},
+		{
+			studentId: 'S002',
+			name: 'Jane Smith',
+			fathersName: 'Tom Smith',
+			mothersName: 'Mary Smith',
+			aadharNo: '5678-9101-1234',
+			dob: '2006-09-10',
+			placeOfBirth: 'Los Angeles',
+			religion: 'Christianity',
+			caste: 'General',
+			subCaste: 'N/A',
+			taluka: 'Central LA',
+			district: 'Los Angeles',
+			state: 'California',
+			lastAttendedSchool: 'LA High School',
+			lastSchoolStandard: '9th',
+			dateOfAdmission: '2021-08-15',
+			admissionStandard: '10th',
+			currentStandard: '11th',
+			progress: 'Good',
+			conduct: 'Excellent',
+			dateOfLeaving: 'N/A',
+			reasonOfLeaving: 'N/A',
+			remarks: 'N/A',
+		},
+		{
+			studentId: 'S003',
+			name: 'Michael Brown',
+			fathersName: 'James Brown',
+			mothersName: 'Patricia Brown',
+			aadharNo: '9101-1234-5678',
+			dob: '2007-01-20',
+			placeOfBirth: 'Chicago',
+			religion: 'Islam',
+			caste: 'General',
+			subCaste: 'N/A',
+			taluka: 'North Side',
+			district: 'Cook',
+			state: 'Illinois',
+			lastAttendedSchool: 'Chicago High School',
+			lastSchoolStandard: '8th',
+			dateOfAdmission: '2022-01-10',
+			admissionStandard: '9th',
+			currentStandard: '10th',
+			progress: 'Average',
+			conduct: 'Good',
+			dateOfLeaving: 'N/A',
+			reasonOfLeaving: 'N/A',
+			remarks: 'N/A',
+		},
+		{
+			studentId: 'S004',
+			name: 'Emily Davis',
+			fathersName: 'William Davis',
+			mothersName: 'Linda Davis',
+			aadharNo: '2345-6789-0123',
+			dob: '2005-12-25',
+			placeOfBirth: 'Houston',
+			religion: 'Hinduism',
+			caste: 'OBC',
+			subCaste: 'N/A',
+			taluka: 'South Houston',
+			district: 'Harris',
+			state: 'Texas',
+			lastAttendedSchool: 'Houston High School',
+			lastSchoolStandard: '11th',
+			dateOfAdmission: '2019-09-05',
+			admissionStandard: '12th',
+			currentStandard: '12th',
+			progress: 'Excellent',
+			conduct: 'Excellent',
+			dateOfLeaving: 'N/A',
+			reasonOfLeaving: 'N/A',
+			remarks: 'N/A',
+		},
+		{
+			studentId: 'S005',
+			name: 'David Wilson',
+			fathersName: 'Richard Wilson',
+			mothersName: 'Barbara Wilson',
+			aadharNo: '3456-7890-1234',
+			dob: '2004-03-30',
+			placeOfBirth: 'Phoenix',
+			religion: 'Buddhism',
+			caste: 'General',
+			subCaste: 'N/A',
+			taluka: 'Central Phoenix',
+			district: 'Maricopa',
+			state: 'Arizona',
+			lastAttendedSchool: 'Phoenix High School',
+			lastSchoolStandard: '12th',
+			dateOfAdmission: '2018-03-01',
+			admissionStandard: '12th',
+			currentStandard: 'Graduated',
+			progress: 'Good',
+			conduct: 'Good',
+			dateOfLeaving: '2023-05-25',
+			reasonOfLeaving: 'Graduated',
+			remarks: 'Graduated with honors',
+		},
+	];
 
 	return (
-		<Table>
-			<TableCaption>A list of all students.</TableCaption>
-			<TableHeader>
-				<TableRow>
-					<TableHead className="w-[100px]">Student ID</TableHead>
-					<TableHead className="w-[200px]">Name</TableHead>
-					<TableHead className="w-[150px]">Father's Name</TableHead>
-					<TableHead className="w-[150px]">Mother's Name</TableHead>
-					<TableHead className="w-[150px]">Aadhar No</TableHead>
-					<TableHead className="w-[150px]">Date of Birth</TableHead>
-					<TableHead className="w-[150px]">Place of Birth</TableHead>
-					<TableHead className="w-[200px]">Religion</TableHead>
-					<TableHead className="w-[150px]">Caste</TableHead>
-					<TableHead className="w-[150px]">Sub-Caste</TableHead>
-					<TableHead className="w-[150px]">Taluka</TableHead>
-					<TableHead className="w-[150px]">District</TableHead>
-					<TableHead className="w-[100px]">State</TableHead>
-					<TableHead className="w-[200px]">Last Attended School</TableHead>
-					<TableHead className="w-[150px]">Last School Standard</TableHead>
-					<TableHead className="w-[150px]">Date of Admission</TableHead>
-					<TableHead className="w-[200px]">Admission Standard</TableHead>
-					<TableHead className="w-[200px]">Current Standard</TableHead>
-					<TableHead className="w-[150px]">Progress</TableHead>
-					<TableHead className="w-[150px]">Conduct</TableHead>
-					<TableHead className="w-[150px]">Date of Leaving</TableHead>
-					<TableHead className="w-[200px]">Reason of Leaving</TableHead>
-					<TableHead className="w-[200px]">Remarks</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{students.map((student) => (
-					<TableRow key={student.studentId}>
-						<TableCell className="font-medium">{student.studentId}</TableCell>
-						<TableCell>
-							{student.name} {student.surname}
-						</TableCell>
-						<TableCell>{student.fathersName}</TableCell>
-						<TableCell>{student.mothersName}</TableCell>
-						<TableCell>{student.aadharNo}</TableCell>
-						<TableCell>{student.dob}</TableCell>
-						<TableCell>{student.placeOfBirth}</TableCell>
-						<TableCell>{student.religion}</TableCell>
-						<TableCell>{student.caste}</TableCell>
-						<TableCell>{student.subCaste}</TableCell>
-						<TableCell>{student.taluka}</TableCell>
-						<TableCell>{student.district}</TableCell>
-						<TableCell>{student.state}</TableCell>
-						<TableCell>{student.lastAttendedSchool}</TableCell>
-						<TableCell>{student.lastSchoolStandard}</TableCell>
-						<TableCell>{student.dateOfAdmission}</TableCell>
-						<TableCell>{student.admissionStandard}</TableCell>
-						<TableCell>{student.currentStandard}</TableCell>
-						<TableCell>{student.progress}</TableCell>
-						<TableCell>{student.conduct}</TableCell>
-						<TableCell>{student.dateOfLeaving}</TableCell>
-						<TableCell>{student.reasonOfLeaving}</TableCell>
-						<TableCell>{student.remarks}</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+		<div className="container mx-auto py-10">
+			<DataTable columns={columns} data={data} />
+		</div>
 	);
-};
-
-export default AllStudents;
+}
