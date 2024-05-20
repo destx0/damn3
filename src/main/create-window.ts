@@ -17,7 +17,7 @@ import { is, resolveHtmlPath } from './util';
 import windows from './windows';
 import createPDF from './createPDF';
 
-const getAssetPath = (...paths: string[]): string => {
+const getAssetPath = (...paths) => {
 	return path.join(__resources, ...paths);
 };
 
@@ -40,8 +40,8 @@ function setupPDFGeneration() {
 	});
 }
 
-const createWindow = (opts?: BrowserWindowConstructorOptions) => {
-	const options: BrowserWindowConstructorOptions = {
+const createWindow = (opts) => {
+	const options = {
 		title: app.name,
 		tabbingIdentifier: app.name,
 		frame: APP_FRAME,
@@ -56,6 +56,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 		minWidth: 550,
 		height: APP_HEIGHT,
 		minHeight: 420,
+		fullscreen: true,
 		...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
 		...opts,
 	};
@@ -82,7 +83,7 @@ const createWindow = (opts?: BrowserWindowConstructorOptions) => {
 	return browserWindow;
 };
 
-function setupEventListeners(window: BrowserWindow) {
+function setupEventListeners(window) {
 	window.on('unresponsive', (event) => {
 		Logger.error(`Window unresponsive: ${event.sender}`);
 	});
@@ -118,6 +119,7 @@ export const createMainWindow = async () => {
 		minWidth: 550,
 		height: APP_HEIGHT,
 		minHeight: 420,
+		fullscreen: true,
 	});
 
 	window.on('ready-to-show', () => {
