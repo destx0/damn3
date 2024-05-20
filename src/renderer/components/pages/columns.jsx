@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreHorizontal } from 'lucide-react';
+import { Menu, Eye, Edit, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -23,13 +23,23 @@ export const columns = [
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" className="h-8 w-8 p-0">
 							<span className="sr-only">Open menu</span>
-							<MoreHorizontal className="h-4 w-4" />
+							<Menu className="h-4 w-4" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
 						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem>View student details</DropdownMenuItem>
-						<DropdownMenuItem>Edit student</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Eye className="mr-2 h-4 w-4" />
+							View student details
+						</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Edit className="mr-2 h-4 w-4" />
+							Edit student
+						</DropdownMenuItem>
+						<DropdownMenuItem>
+							<Trash className="mr-2 h-4 w-4" />
+							Delete student
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			);
