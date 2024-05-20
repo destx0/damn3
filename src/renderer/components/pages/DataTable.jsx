@@ -24,6 +24,7 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import PaginationComponent from '@/components/ui/PaginationComponent'; // Adjust the path as necessary
+import { Settings } from 'lucide-react'; // Import the icon from lucide-react
 
 export function DataTable({ columns, data }) {
 	const [columnVisibility, setColumnVisibility] = useState({});
@@ -52,11 +53,15 @@ export function DataTable({ columns, data }) {
 			<div className="flex items-center py-4">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button variant="outline" className="ml-auto">
-							Columns
+						<Button
+							variant="outline"
+							className="ml-auto flex items-center space-x-2"
+						>
+							<Settings className="h-4 w-4" />
+							<span>Columns</span>
 						</Button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
+					<DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
 						{table
 							.getAllColumns()
 							.filter((column) => column.getCanHide())
