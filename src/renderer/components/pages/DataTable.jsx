@@ -39,24 +39,24 @@ export function DataTable({ columns, data }) {
 		<div>
 			<div className="rounded-md border">
 				<Table className="min-w-full divide-y divide-gray-200">
-					<TableHead className="bg-gray-50">
+					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHeader
-										key={header.id}
-										className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-										style={{ whiteSpace: 'nowrap' }} // Ensure headers do not wrap vertically
-									>
-										{flexRender(
-											header.column.columnDef.header,
-											header.getContext(),
-										)}
-									</TableHeader>
-								))}
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext(),
+													)}
+										</TableHead>
+									);
+								})}
 							</TableRow>
 						))}
-					</TableHead>
+					</TableHeader>
 					<TableBody className="bg-white divide-y divide-gray-200">
 						{table.getRowModel().rows.map((row) => (
 							<TableRow key={row.id}>
