@@ -13,6 +13,15 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import {
+	Pagination,
+	PaginationContent,
+	PaginationEllipsis,
+	PaginationItem,
+	PaginationLink,
+	PaginationNext,
+	PaginationPrevious,
+} from '@/components/ui/pagination';
 
 export function DataTable({ columns, data }) {
 	const [pageIndex, setPageIndex] = useState(0);
@@ -34,6 +43,8 @@ export function DataTable({ columns, data }) {
 		getCoreRowModel: getCoreRowModel(),
 		manualPagination: true,
 	});
+
+	const totalPages = table.getPageCount();
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -77,25 +88,41 @@ export function DataTable({ columns, data }) {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="pagination flex justify-between items-center px-4 py-3 bg-gray-100 border-t border-gray-300 sm:px-6">
-				<button
-					onClick={() => table.previousPage()}
-					disabled={!table.getCanPreviousPage()}
-					className="relative inline-flex items-center px-4 py-2 border border-gray-400 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-200 disabled:opacity-50"
-				>
-					Previous
-				</button>
-				<span className="text-sm text-gray-700">
-					Page {table.getState().pagination.pageIndex + 1} of{' '}
-					{table.getPageCount()}
-				</span>
-				<button
-					onClick={() => table.nextPage()}
-					disabled={!table.getCanNextPage()}
-					className="relative inline-flex items-center px-4 py-2 border border-gray-400 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-200 disabled:opacity-50"
-				>
-					Next
-				</button>
+			<div className="">
+				<Pagination>
+					<PaginationContent>
+						<PaginationItem>
+							<PaginationPrevious
+								href="#"
+								onClick={() => {
+									if (pageIndex > 0) setPageIndex(pageIndex - 1);
+								}}
+								disabled={!table.getCanPreviousPage()}
+							/>
+						</PaginationItem>
+						{Array.from({ length: totalPages }, (_, index) => (
+							<PaginationItem key={index}>
+								<PaginationLink
+									href="#"
+									isActive={pageIndex === index}
+									onClick={() => setPageIndex(index)}
+								>
+									{index + 1}
+								</PaginationLink>
+							</PaginationItem>
+						))}
+						{totalPages > 5 && <PaginationEllipsis />}
+						<PaginationItem>
+							<PaginationNext
+								href="#"
+								onClick={() => {
+									if (pageIndex < totalPages - 1) setPageIndex(pageIndex + 1);
+								}}
+								disabled={!table.getCanNextPage()}
+							/>
+						</PaginationItem>
+					</PaginationContent>
+				</Pagination>
 			</div>
 		</div>
 	);
