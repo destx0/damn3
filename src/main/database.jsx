@@ -105,10 +105,11 @@ ipcMain.handle(ipcChannels.SAVE_STUDENT_DATA, (event, student) => {
 	}
 });
 
-ipcMain.handle(ipcChannels.FETCH_STUDENT_DATA, () => {
+ipcMain.handle(ipcChannels.FETCH_STUDENT_DATA, (event, page, pageSize) => {
 	try {
-		const stmt = db.prepare('SELECT * FROM students');
-		const students = stmt.all();
+		const offset = (page - 1) * pageSize;
+		const stmt = db.prepare('SELECT * FROM students LIMIT ? OFFSET ?');
+		const students = stmt.all(pageSize, offset);
 		return { success: true, data: students };
 	} catch (error) {
 		console.error('Error fetching student data:', error);

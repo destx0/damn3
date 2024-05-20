@@ -25,26 +25,23 @@ import {
 
 export function DataTable({ columns, data }) {
 	const [pageIndex, setPageIndex] = useState(0);
-	const [pageSize, setPageSize] = useState(10);
+	const [pageSize, setPageSize] = useState(5);
+
+	// Calculate the current page data
+	const pageCount = Math.ceil(data.length / pageSize);
+	const currentData = data.slice(
+		pageIndex * pageSize,
+		(pageIndex + 1) * pageSize,
+	);
 
 	const table = useReactTable({
-		data,
+		data: currentData,
 		columns,
-		pageCount: Math.ceil(data.length / pageSize),
+		pageCount,
 		state: { pageIndex, pageSize },
-		onPaginationChange: (updater) => {
-			const newState = updater({
-				pageIndex: table.getState().pagination.pageIndex,
-				pageSize: table.getState().pagination.pageSize,
-			});
-			setPageIndex(newState.pageIndex);
-			setPageSize(newState.pageSize);
-		},
 		getCoreRowModel: getCoreRowModel(),
 		manualPagination: true,
 	});
-
-	const totalPages = table.getPageCount();
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -88,7 +85,7 @@ export function DataTable({ columns, data }) {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="">
+			<div className="p-4">
 				<Pagination>
 					<PaginationContent>
 						<PaginationItem>
@@ -100,7 +97,7 @@ export function DataTable({ columns, data }) {
 								disabled={!table.getCanPreviousPage()}
 							/>
 						</PaginationItem>
-						{Array.from({ length: totalPages }, (_, index) => (
+						{Array.from({ length: pageCount }, (_, index) => (
 							<PaginationItem key={index}>
 								<PaginationLink
 									href="#"
@@ -111,12 +108,12 @@ export function DataTable({ columns, data }) {
 								</PaginationLink>
 							</PaginationItem>
 						))}
-						{totalPages > 5 && <PaginationEllipsis />}
+						{pageCount > 5 && <PaginationEllipsis />}
 						<PaginationItem>
 							<PaginationNext
 								href="#"
 								onClick={() => {
-									if (pageIndex < totalPages - 1) setPageIndex(pageIndex + 1);
+									if (pageIndex < pageCount - 1) setPageIndex(pageIndex + 1);
 								}}
 								disabled={!table.getCanNextPage()}
 							/>

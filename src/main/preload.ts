@@ -44,7 +44,8 @@ const electronHandler = {
 	addStudent: (student) =>
 		ipcRenderer.invoke(ipcChannels.SAVE_STUDENT_DATA, student),
 
-	getStudents: () => ipcRenderer.invoke(ipcChannels.FETCH_STUDENT_DATA),
+	getStudents: (page, pageSize) =>
+		ipcRenderer.invoke(ipcChannels.FETCH_STUDENT_DATA, page, pageSize),
 
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
