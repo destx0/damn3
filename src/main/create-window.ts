@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import {
 	BrowserWindow,
 	BrowserWindowConstructorOptions,
@@ -41,7 +40,7 @@ function setupPDFGeneration() {
 }
 
 const createWindow = (opts) => {
-	const options = {
+	const options: BrowserWindowConstructorOptions = {
 		title: app.name,
 		tabbingIdentifier: app.name,
 		frame: APP_FRAME,
@@ -59,13 +58,14 @@ const createWindow = (opts) => {
 		fullscreen: true,
 		...(is.linux ? { icon: getAssetPath('icon.png') } : {}),
 		...opts,
-	};
-
-	options.webPreferences = {
-		webSecurity: !is.development,
-		preload: app.isPackaged
-			? path.join(__dirname, 'preload.js')
-			: path.join(__dirname, '../../.erb/dll/preload.js'),
+		webPreferences: {
+			preload: app.isPackaged
+				? path.join(__dirname, 'preload.js')
+				: path.join(__dirname, '../../.erb/dll/preload.js'),
+			contextIsolation: true,
+			enableRemoteModule: false,
+			nodeIntegration: false,
+		},
 	};
 
 	const browserWindow = new BrowserWindow(options);

@@ -12,7 +12,6 @@ const DateInput = ({ value, onChange }) => {
 	const monthRef = useRef(null);
 	const yearRef = useRef(null);
 
-	// Parse and split the external value only when it changes
 	useEffect(() => {
 		if (value) {
 			const date = parse(value, 'dd/MM/yyyy', new Date());
@@ -27,14 +26,12 @@ const DateInput = ({ value, onChange }) => {
 				setYear('');
 			}
 		} else {
-			// Clear all fields if the external value is an empty string
 			setDay('');
 			setMonth('');
 			setYear('');
 		}
 	}, [value]);
 
-	// Update external state when day, month, or year is complete and valid
 	useEffect(() => {
 		if (day.length === 2 && month.length === 2 && year.length === 4) {
 			const dateString = `${day}/${month}/${year}`;
@@ -51,12 +48,11 @@ const DateInput = ({ value, onChange }) => {
 	const handleInputChange = (ref, setState) => (e) => {
 		const value = e.target.value.replace(/\D/g, '');
 		setState(value);
-		if (value.length === 2) {
-			ref.current?.focus();
+		if (value.length === 2 && ref) {
+			ref.current.focus();
 		}
 	};
 
-	// Arrow key navigation
 	const handleKeyDown = (e, nextRef, previousRef) => {
 		if (e.key === 'ArrowRight' && nextRef) {
 			e.preventDefault();
@@ -75,7 +71,7 @@ const DateInput = ({ value, onChange }) => {
 					id="day"
 					placeholder="DD"
 					value={day}
-					onChange={handleInputChange(dayRef, setDay)}
+					onChange={handleInputChange(monthRef, setDay)}
 					onBlur={() => setError('')}
 					onKeyDown={(e) => handleKeyDown(e, monthRef, null)}
 					maxLength={2}
@@ -88,7 +84,7 @@ const DateInput = ({ value, onChange }) => {
 					id="month"
 					placeholder="MM"
 					value={month}
-					onChange={handleInputChange(monthRef, setMonth)}
+					onChange={handleInputChange(yearRef, setMonth)}
 					onBlur={() => setError('')}
 					onKeyDown={(e) => handleKeyDown(e, yearRef, dayRef)}
 					maxLength={2}
@@ -101,7 +97,7 @@ const DateInput = ({ value, onChange }) => {
 					id="year"
 					placeholder="YYYY"
 					value={year}
-					onChange={handleInputChange(yearRef, setYear)}
+					onChange={handleInputChange(null, setYear)}
 					onBlur={() => setError('')}
 					onKeyDown={(e) => handleKeyDown(e, null, monthRef)}
 					maxLength={4}

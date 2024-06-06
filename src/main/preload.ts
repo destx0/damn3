@@ -1,9 +1,9 @@
-import { $errors } from '@/config/strings';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { getOS } from '@/utils/getOS';
 import { NotificationOptions } from '@/types/notification';
 import { ipcChannels } from '../config/ipc-channels';
 import { SettingsType } from '../config/settings';
+import { $errors } from '@/config/strings';
 
 const channels = Object.values(ipcChannels);
 
@@ -57,14 +57,14 @@ const electronHandler = {
 
 		send(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {
-				return;
+				throw new Error(`${$errors.invalidChannel}: ${channel}`);
 			}
 			ipcRenderer.send(channel, ...args);
 		},
 
 		on(channel: string, func: (...args: unknown[]) => void) {
 			if (!channels.includes(channel)) {
-				return;
+				throw new Error(`${$errors.invalidChannel}: ${channel}`);
 			}
 			const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
 				func(...args);
@@ -76,7 +76,7 @@ const electronHandler = {
 
 		once(channel: string, func: (...args: unknown[]) => void) {
 			if (!channels.includes(channel)) {
-				return;
+				throw new Error(`${$errors.invalidChannel}: ${channel}`);
 			}
 			ipcRenderer.once(channel, (_event, ...args) => func(...args));
 		},

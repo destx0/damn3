@@ -8,7 +8,6 @@ const Form1 = () => {
 	const handleGeneratePDF = async (event) => {
 		event.preventDefault();
 
-		// Validation or other checks can be performed here
 		if (!studentData.studentId || !studentData.name || !studentData.dob) {
 			alert('Required student data is missing!');
 			return;
@@ -16,7 +15,6 @@ const Form1 = () => {
 
 		console.log('Saving student data:', studentData);
 
-		// Save student data to the database
 		try {
 			const success = await window.electron.addStudent(studentData);
 			if (success) {
@@ -30,9 +28,8 @@ const Form1 = () => {
 			console.error('Error saving data:', error);
 		}
 
-		// Generate PDF (assuming this functionality is correctly implemented)
 		try {
-			window.electron.generatePDF(studentData);
+			await window.electron.generatePDF(studentData);
 			window.electron.onPDFGenerated((message, path) => {
 				alert(`Success: ${message}`);
 				console.log('PDF saved at:', path);
@@ -41,10 +38,6 @@ const Form1 = () => {
 			alert(`Failed to generate PDF: ${error}`);
 			console.error('Error generating PDF:', error);
 		}
-
-		window.electron.onPDFGenerationError((message) => {
-			alert(`Error: ${message}`);
-		});
 	};
 
 	const handleInputChange = (event) => {

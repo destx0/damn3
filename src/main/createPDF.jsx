@@ -4,58 +4,58 @@ const { dialog } = require('electron');
 
 async function createPDF(studentData) {
 	return new Promise(async (resolve, reject) => {
-		console.log('Creating PDF document');
 		const doc = new PDFDocument();
-
-		console.log('PDF document created');
-
-		// Open the file manager dialog to select the output path
 		const { filePath } = await dialog.showSaveDialog({
 			defaultPath: 'student_info.pdf',
 			filters: [{ name: 'PDF', extensions: ['pdf'] }],
 		});
 
 		if (!filePath) {
-			console.log('File save canceled');
 			reject(new Error('File save canceled'));
 			return;
 		}
 
 		const writeStream = fs.createWriteStream(filePath);
 
-		writeStream.on('finish', () => {
-			console.log('Write stream finished');
-			resolve(filePath);
-		});
-
-		writeStream.on('error', (err) => {
-			console.error('Write stream error:', err);
-			reject(err);
-		});
+		writeStream.on('finish', () => resolve(filePath));
+		writeStream.on('error', (err) => reject(err));
 
 		doc.pipe(writeStream);
 
-		console.log('PDF stream piped to output file');
+		// Title
+		doc
+			.fontSize(25)
+			.text('Leaving Certificate', { align: 'center' })
+			.moveDown();
 
-		doc.fontSize(25).text('Student Information', { align: 'center' });
-		doc.moveDown();
-		doc.fontSize(18);
+		// Student Info Fields in a Single Line
+		const studentInfo = `
+            Student ID: ${studentData.studentId} Aadhar No: ${studentData.aadharNo}Name: ${studentData.name} Surname: ${studentData.surname} Father's Name: ${studentData.fathersName}
+            Mother's Name: ${studentData.mothersName}
+            Religion: ${studentData.religion}
+            Caste: ${studentData.caste}
+            Sub-Caste: ${studentData.subCaste}
+            Place of Birth: ${studentData.placeOfBirth}
+            Taluka: ${studentData.taluka}
+            District: ${studentData.district}
+            State: ${studentData.state}
+            Date of Birth: ${studentData.dob}
+            Last Attended School: ${studentData.lastAttendedSchool}
+            Last Attended School Standard: ${studentData.lastSchoolStandard}
+            Date of Admission in This School: ${studentData.dateOfAdmission}
+            Admission Standard in This School: ${studentData.admissionStandard}
+            Progress: ${studentData.progress}
+            Conduct: ${studentData.conduct}
+            Date of Leaving School: ${studentData.dateOfLeaving}
+            Standard in Which Studying and Since When: ${studentData.currentStandard}
+            Reason of Leaving School: ${studentData.reasonOfLeaving}
+            Remarks: ${studentData.remarks}
+        `;
 
-		console.log('Added title and moved down');
-
-		Object.keys(studentData).forEach((key) => {
-			const value = studentData[key];
-			if (value !== undefined) {
-				doc.text(`${key}: ${value}`, { width: 410, align: 'left' });
-				doc.moveDown(0.5);
-			}
-		});
-
-		console.log('Added student data');
+		doc.fontSize(12).text(studentInfo, { align: 'left', lineGap: 1.5 });
 
 		doc.end();
-
-		console.log('PDF document ended');
 	});
 }
+
 module.exports = createPDF;
