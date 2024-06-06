@@ -6,10 +6,12 @@ import fieldData from '@/renderer/config/formFieldConfig';
 
 export function StudentInfoForm({ studentData, handleInputChange }) {
 	return (
-		<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+		<div className="grid grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3">
 			{fieldData.map((field) => (
 				<div key={field.id} className="space-y-2">
-					<Label htmlFor={field.id}>{field.label}</Label>
+					<Label htmlFor={field.id} className="text-lg">
+						{field.label}
+					</Label>
 					{field.type === 'text' ? (
 						<Input
 							type="text"
