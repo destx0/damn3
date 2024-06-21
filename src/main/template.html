@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaving Certificate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 25px;
+        }
+        .box {
+            border: 2px dotted black;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .field-title {
+            font-weight: bold;
+        }
+        .field-value {
+            margin-left: 10px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaving Certificate</h1>
+    <div class="box">
+        <div class="field">
+            <span class="field-title">Student ID:</span><span class="field-value">{{studentId}}</span>
+        </div>
+        <div class="field">
+            <span class="field-title">Aadhar No:</span><span class="field-value">{{aadharNo}}</span>
+        </div>
+        <div class="field">
+            <span class="field-title">Name:</span><span class="field-value">{{name}}</span>
+        </div>
+        <div class="field">
+            <span class="field-title">Surname:</span><span class="field-value">{{surname}}</span>
+        </div>
+        <div class="field">
+            <span class="field-title">Father's Name:</span><span class="field-value">{{fathersName}}</span>
+        </div>
+        <div class="field">
+            <span class="field-title">Mother's Name:</span><span class="field-value">{{mothersName}}</span>
+        </div>
+        <!-- Add other fields similarly -->
+    </div>
+</body>
+</html>
