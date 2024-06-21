@@ -113,32 +113,53 @@ async function createPDF(studentData) {
 			{ label: 'Remarks', value: studentData.remarks },
 		];
 
-		const lineHeight = 20; // Adjust this value to increase/decrease vertical spacing
-		const labelPadding = 5; // Space between label and start of dotted line
+		const lineSpacing = 5; // Space between lines
+		const fieldSpacing = 10; // Space between fields
+		let currentX = doc.page.margins.left;
+		let currentY = doc.y;
 
 		fields.forEach((field, index) => {
-			const y = doc.y;
-			const labelWidth = doc.widthOfString(field.label + ':');
-			const startX = doc.page.margins.left + labelWidth + labelPadding;
+			const labelText = `${field.label}: `;
+			const valueText = field.value || '';
 
-			// Draw label
-			doc.text(field.label + ':', doc.page.margins.left, y);
+			const labelWidth = doc.widthOfString(labelText);
+			const valueWidth = doc.widthOfString(valueText);
+			const totalWidth = labelWidth + valueWidth;
 
-			// Draw dotted line
+			if (currentX + totalWidth > doc.page.width - doc.page.margins.right) {
+				// Move to next line if there's not enough space
+				currentX = doc.page.margins.left;
+				currentY += lineSpacing + doc.currentLineHeight();
+			}
+
+			// Draw label (bold)
 			doc
-				.moveTo(startX, y + lineHeight / 2)
-				.lineTo(doc.page.width - doc.page.margins.right, y + lineHeight / 2)
+				.font('Helvetica-Bold')
+				.text(labelText, currentX, currentY, { continued: true });
+
+			// Draw value (normal) with dotted underline
+			const valueX = currentX + labelWidth;
+			doc.font('Helvetica').text(valueText, { underline: true });
+
+			// Draw dotted underline
+			doc
+				.moveTo(valueX, currentY + doc.currentLineHeight())
+				.lineTo(valueX + valueWidth, currentY + doc.currentLineHeight())
 				.dash(1, { space: 2 })
 				.stroke();
 
-			// Add value text
-			doc.text(field.value || '', startX + 2, y);
+			// Update position for next field
+			currentX += totalWidth + fieldSpacing;
 
-			// Move to next line
-			doc.moveDown(1);
+			// Check if we need to move to the next line
+			if (currentX > doc.page.width - doc.page.margins.right - 100) {
+				// 100 is a buffer
+				currentX = doc.page.margins.left;
+				currentY += lineSpacing + doc.currentLineHeight();
+			}
 		});
 
-		doc.moveDown();
+		doc.moveDown(2);
 
 		doc.text(
 			'Certified that the above information is in accordance with the School Register.',
