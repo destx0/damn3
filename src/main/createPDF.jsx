@@ -31,24 +31,24 @@ async function createPDF(studentData) {
 
 		doc.pipe(writeStream);
 
-		// Header
+		// Header (increased font sizes)
 		doc
-			.fontSize(12)
+			.fontSize(16)
 			.text("Jaggannath Shikshan Prasarak Mandal's", { align: 'center' });
 		doc
-			.fontSize(14)
+			.fontSize(18)
 			.text('Shashikant Sakharam Chaudhari Kanya Vidyalay, Yawal', {
 				align: 'center',
 			});
-		doc.fontSize(10).text('Taluka- Yawal, Dist. Jalgaon', { align: 'center' });
-		doc.fontSize(9).text('Phone No. 02585-261290 E Mail - mksyawal@yahoo.in', {
+		doc.fontSize(14).text('Taluka- Yawal, Dist. Jalgaon', { align: 'center' });
+		doc.fontSize(12).text('Phone No. 02585-261290 E Mail - mksyawal@yahoo.in', {
 			align: 'center',
 		});
 
 		doc.moveDown(0.5);
 
-		// School details
-		doc.fontSize(9);
+		// School details (increased font size)
+		doc.fontSize(12);
 		doc.text(`Sr. No. ${studentData.srNo || ''}`, {
 			continued: true,
 			align: 'left',
@@ -66,13 +66,13 @@ async function createPDF(studentData) {
 
 		doc.moveDown(0.5);
 
-		// Title
-		doc.fontSize(14).text('Leaving Certificate', { align: 'center' });
+		// Title (increased font size)
+		doc.fontSize(20).text('Leaving Certificate', { align: 'center' });
 
 		doc.moveDown(0.5);
 
-		// Student Info Fields
-		doc.fontSize(10);
+		// Student Info Fields (increased font size)
+		doc.fontSize(12);
 		const fields = [
 			{ label: 'Student ID', value: studentData.studentId },
 			{ label: 'U.I.D. No. (Aadhar Card No.)', value: studentData.aadharNo },
@@ -113,8 +113,8 @@ async function createPDF(studentData) {
 			{ label: 'Remarks', value: studentData.remarks },
 		];
 
-		const lineSpacing = 5; // Space between lines
-		const fieldSpacing = 10; // Space between fields
+		const lineSpacing = 7; // Increased space between lines
+		const fieldSpacing = 12; // Increased space between fields
 		let currentX = doc.page.margins.left;
 		let currentY = doc.y;
 
@@ -174,7 +174,8 @@ async function createPDF(studentData) {
 
 		doc.moveDown(4);
 
-		// Signatures
+		// Signatures (increased font size)
+		doc.fontSize(12);
 		doc.text('Class Teacher', 50, 700);
 		doc.text('Clerk', 250, 700);
 		doc.text('Head Master', 450, 700);
@@ -182,8 +183,8 @@ async function createPDF(studentData) {
 
 		doc.moveDown();
 
-		// Footer
-		doc.fontSize(8);
+		// Footer (slightly increased font size)
+		doc.fontSize(10);
 		doc.text(
 			'* No change in any entry in this certificate shall be made except by the authority issuing it.',
 		);
