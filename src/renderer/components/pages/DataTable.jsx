@@ -23,16 +23,15 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
- import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import PaginationComponent from '@/components/ui/PaginationComponent'; // Adjust the path as necessary
-import { Settings } from 'lucide-react'; // Import the icon from lucide-react
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import PaginationComponent from '@/components/ui/PaginationComponent';
+import { Settings } from 'lucide-react';
 
 export function DataTable({ columns, data }) {
 	const [columnVisibility, setColumnVisibility] = useState({});
 	const [pageIndex, setPageIndex] = useState(0);
 	const [pageSize, setPageSize] = useState(10);
 
-	// Calculate the current page data
 	const pageCount = Math.ceil(data.length / pageSize);
 	const currentData = data.slice(
 		pageIndex * pageSize,
@@ -50,19 +49,16 @@ export function DataTable({ columns, data }) {
 	});
 
 	return (
-		<div className="container mx-auto px-4 py-8">
-			<div className="flex items-center py-4">
+		<div className="w-full">
+			<div className="flex justify-end mb-4">
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
-						<Button
-							variant="outline"
-							className="ml-auto flex items-center space-x-2"
-						>
+						<Button variant="outline" className="flex items-center space-x-2">
 							<Settings className="h-4 w-4" />
 							<span>Columns</span>
 						</Button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
+					<DropdownMenuContent align="end" className="max-h-60">
 						<ScrollArea className="h-full">
 							{table
 								.getAllColumns()
@@ -84,16 +80,17 @@ export function DataTable({ columns, data }) {
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
-			<div className="rounded-lg shadow overflow-hidden border border-gray-300">
-				<ScrollArea className="w-full overflow-auto scrollbar-visible">
-					<Table className="min-w-full divide-y divide-gray-300">
-						<TableHeader className="bg-gray-300">
+			<div className="rounded-lg shadow border border-gray-300">
+				<ScrollArea className="h-[calc(100vh-200px)]">
+					<Table>
+						<TableHeader className="bg-gray-100 sticky top-0 z-10">
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>
 									{headerGroup.headers.map((header) => (
 										<TableHead
 											key={header.id}
-											className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider"
+											className="px-4 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider whitespace-nowrap"
+											style={{ minWidth: '150px' }}
 										>
 											{header.isPlaceholder
 												? null
@@ -106,16 +103,16 @@ export function DataTable({ columns, data }) {
 								</TableRow>
 							))}
 						</TableHeader>
-						<TableBody className="bg-white divide-y divide-gray-300">
+						<TableBody>
 							{table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className="even:bg-gray-100 odd:bg-gray-50 hover:bg-gray-200 transition-colors duration-200"
+									className="even:bg-gray-50 hover:bg-gray-100 transition-colors duration-200"
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell
 											key={cell.id}
-											className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+											className="px-4 py-2 text-sm text-gray-900 whitespace-nowrap"
 										>
 											{flexRender(
 												cell.column.columnDef.cell,
@@ -130,7 +127,7 @@ export function DataTable({ columns, data }) {
 					<ScrollBar orientation="horizontal" />
 				</ScrollArea>
 			</div>
-			<div className="p-4">
+			<div className="mt-4">
 				<PaginationComponent
 					pageIndex={pageIndex}
 					pageCount={pageCount}

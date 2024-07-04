@@ -7,6 +7,7 @@ import {
 } from 'electron';
 import Logger from 'electron-log';
 import path from 'path';
+import Database from 'better-sqlite3';
 import { APP_FRAME, APP_HEIGHT, APP_WIDTH } from '../config/config';
 import { setupContextMenu } from './context-menu';
 import MenuBuilder from './menu';
@@ -15,10 +16,22 @@ import { getSetting } from './store-actions';
 import { is, resolveHtmlPath } from './util';
 import windows from './windows';
 import createPDF from './createPDF';
+import { ipcChannels } from '../config/ipc-channels';
 
 const getAssetPath = (...paths) => {
 	return path.join(__resources, ...paths);
 };
+
+// Database setup
+const dbPath = path.join(__dirname, 'test-database.sqlite');
+const db = new Database(dbPath, { verbose: console.log });
+
+function setupIpcHandlers() {
+	setupPDFGeneration();
+	setupGetAllStudents();
+	setupFetchStudentData();
+	setupSaveStudentData();
+}
 
 function setupPDFGeneration() {
 	ipcMain.on('generate-pdf', async (event, studentData) => {
@@ -35,6 +48,105 @@ function setupPDFGeneration() {
 			console.error('Failed to generate PDF:', error);
 			Logger.error('Failed to generate PDF', error);
 			event.reply('pdf-generation-failed', 'Failed to generate PDF');
+		}
+	});
+}
+
+function setupGetAllStudents() {
+	ipcMain.handle(ipcChannels.GET_ALL_STUDENTS, (event) => {
+		try {
+			const stmt = db.prepare('SELECT * FROM students');
+			const students = stmt.all();
+			return { success: true, data: students };
+		} catch (error) {
+			Logger.error('Error fetching all student data:', error);
+			return { success: false, error: error.message };
+		}
+	});
+}
+
+function setupFetchStudentData() {
+	ipcMain.handle(ipcChannels.FETCH_STUDENT_DATA, (event, page, pageSize) => {
+		try {
+			const offset = (page - 1) * pageSize;
+			const stmt = db.prepare('SELECT * FROM students LIMIT ? OFFSET ?');
+			const students = stmt.all(pageSize, offset);
+			return { success: true, data: students };
+		} catch (error) {
+			Logger.error('Error fetching student data:', error);
+			return { success: false, error: error.message };
+		}
+	});
+}
+
+function setupSaveStudentData() {
+	ipcMain.handle(ipcChannels.SAVE_STUDENT_DATA, (event, student) => {
+		try {
+			const {
+				studentId,
+				aadharNo,
+				name,
+				surname,
+				fathersName,
+				mothersName,
+				religion,
+				caste,
+				subCaste,
+				placeOfBirth,
+				taluka,
+				district,
+				state,
+				dob,
+				lastAttendedSchool,
+				lastSchoolStandard,
+				dateOfAdmission,
+				admissionStandard,
+				progress,
+				conduct,
+				dateOfLeaving,
+				currentStandard,
+				reasonOfLeaving,
+				remarks,
+			} = student;
+
+			const stmt = db.prepare(`INSERT INTO students (
+        studentId, aadharNo, name, surname, fathersName, mothersName, religion, caste, subCaste,
+        placeOfBirth, taluka, district, state, dob, lastAttendedSchool, lastSchoolStandard,
+        dateOfAdmission, admissionStandard, progress, conduct, dateOfLeaving, currentStandard,
+        reasonOfLeaving, remarks
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+
+			const info = stmt.run(
+				studentId,
+				aadharNo,
+				name,
+				surname,
+				fathersName,
+				mothersName,
+				religion,
+				caste,
+				subCaste,
+				placeOfBirth,
+				taluka,
+				district,
+				state,
+				dob,
+				lastAttendedSchool,
+				lastSchoolStandard,
+				dateOfAdmission,
+				admissionStandard,
+				progress,
+				conduct,
+				dateOfLeaving,
+				currentStandard,
+				reasonOfLeaving,
+				remarks,
+			);
+
+			return { success: info.changes > 0 };
+		} catch (error) {
+			Logger.error('Error saving student data:', error);
+			return { success: false, error: error.message };
 		}
 	});
 }
@@ -131,7 +243,7 @@ export const createMainWindow = async () => {
 	});
 
 	window.loadURL(resolveHtmlPath('index.html'));
-	setupPDFGeneration();
+	setupIpcHandlers();
 	return window;
 };
 

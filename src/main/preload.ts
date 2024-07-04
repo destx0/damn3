@@ -47,6 +47,9 @@ const electronHandler = {
 	getStudents: (page, pageSize) =>
 		ipcRenderer.invoke(ipcChannels.FETCH_STUDENT_DATA, page, pageSize),
 
+	// Add the new getAllStudents function
+	getAllStudents: () => ipcRenderer.invoke(ipcChannels.GET_ALL_STUDENTS),
+
 	ipcRenderer: {
 		invoke(channel: string, ...args: unknown[]) {
 			if (!channels.includes(channel)) {
