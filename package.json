@@ -195,6 +195,7 @@
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.9.1",
 		"css-minimizer-webpack-plugin": "^6.0.0",
+		"daisyui": "^4.12.10",
 		"detect-port": "^1.5.1",
 		"electron": "^27.1.0",
 		"electron-builder": "^24.9.1",
